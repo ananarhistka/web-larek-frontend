@@ -87,16 +87,9 @@ EventEmitter класс, который представляет собой ре
 - description: описание лота;
 - image: изображение лота;
 
-## 3-ProductItem
+## 3-CartItem
 
-Класс ProductItem представляет собой модель заказа, содержит описание карточек.
-
-В классе ProductItem определены следующие защищенные свойства:
-
-- PaymentMethod: способ оплаты заказа;
-- DeliveryAddress: адрес доставки заказа;
-- email: адрес электронной почты заказчика;
-- phone: номер телефона заказчика;
+Класс CartItem представляет собой модель заказа, содержит описание карточек.
 
 ## Компоненты представления
 
@@ -127,16 +120,6 @@ MakingAnOrder:
   - email: адрес электронной почты заказчика.
   - phone: номер телефона заказчика.
 
-## 4 AddProduct
-
-AddProduct:
-Предоставляет методы для добавления и удаления продукта из корзины.
-
- Свойства:
-  - addProductToCart: флаг, указывающий добавлен ли продукт в корзину.
-  - addToCart(): метод для добавления продукта в корзину.
-  - removeFromCart(): метод для удаления продукта из корзины.
-
 ## Ключевые типы данных
 //карточки на главной странице
 interface Product {
@@ -153,19 +136,11 @@ interface CartProduct {
   - image: string;//путь к изображению
 }
 
-
-//отслеживание добавился ли продукт
-export interface AddProduct {
-  - addProductToCart: boolean;
-  - addToCart: () => void;//добавить
-  - removeFromeCars: () => void;//удалить
-}
-
 interface MainPage {
-  - cart: ProductItem[]; //выбранные продукты в корзине
-  - preview: ProductItem; //просмотр продукта
-  - directory: ProductItem[]; //все категории
-  - orderProducr: AddProduct;//отслеживание продуктов в корзине
+  - cart: CartItem[]; //выбранные продукты в корзине
+  - preview: CartItem; //просмотр продукта
+  - directory: CartItem[]; //все категории
+  - orderProducr: Cart;//отслеживание продуктов в корзине
 }
 
 //все события на сайте
