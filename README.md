@@ -105,7 +105,7 @@ EventEmitter класс, который представляет собой ре
 Cart:
 Представляет информацию о содержимом корзины.
 
-- Свойства:
+ Свойства:
   - products: массив продуктов типа CartProduct.
   - totalPrice: общая стоимость продуктов в корзине.
 
@@ -114,7 +114,7 @@ Cart:
 DeliveryAddress:
 Предоставляет информацию об адресе доставки и методе оплаты.
 
-- Свойства:
+ Свойства:
   - address: адрес доставки (строка или число).
   - payment: метод оплаты типа PaymentMethod.
 
@@ -123,7 +123,7 @@ DeliveryAddress:
 MakingAnOrder:
 Предоставляет информацию для выполнения заказа.
 
-- Свойства:
+ Свойства:
   - email: адрес электронной почты заказчика.
   - phone: номер телефона заказчика.
 
@@ -132,7 +132,7 @@ MakingAnOrder:
 AddProduct:
 Предоставляет методы для добавления и удаления продукта из корзины.
 
-- Свойства:
+ Свойства:
   - addProductToCart: флаг, указывающий добавлен ли продукт в корзину.
   - addToCart(): метод для добавления продукта в корзину.
   - removeFromCart(): метод для удаления продукта из корзины.
@@ -140,30 +140,48 @@ AddProduct:
 ## Ключевые типы данных
 //карточки на главной странице
 interface Product {
-  products: CartProduct[];//описание карточек
-  category: LotSection;//категории
+  - products: CartProduct[];//описание карточек
+  - category: LotSection;//категории
 }
 
 //описание карточки 
 interface CartProduct {
-  id: number;//id карточки
-  name: string;//имя карточки
-  price: number;//цена карточки 
-  description: string;//описание 
-  image: string;//путь к изображению
+  - id: number;//id карточки
+  - name: string;//имя карточки
+  - price: number;//цена карточки 
+  - description: string;//описание 
+  - image: string;//путь к изображению
 }
 
 
 //отслеживание добавился ли продукт
 export interface AddProduct {
-  addProductToCart: boolean;
-  addToCart: () => void;//добавить
-  removeFromeCars: () => void;//удалить
+  - addProductToCart: boolean;
+  - addToCart: () => void;//добавить
+  - removeFromeCars: () => void;//удалить
 }
 
 interface MainPage {
-  cart: ProductItem[]; //выбранные продукты в корзине
-  preview: ProductItem; //просмотр продукта
-  directory: ProductItem[]; //все категории
-  orderProducr: AddProduct;//отслеживание продуктов в корзине
+  - cart: ProductItem[]; //выбранные продукты в корзине
+  - preview: ProductItem; //просмотр продукта
+  - directory: ProductItem[]; //все категории
+  - orderProducr: AddProduct;//отслеживание продуктов в корзине
 }
+
+//все события на сайте
+enum Events {
+CATALOG_PRODUCTS = "product:changed", //все категории карточек
+HOVER_PRODUCTS = "product:hover",//навели на карточку
+CLICK_PRODUCTS = "card:open", //кликнули по карточке
+OPEN_MODAL = "modal:open", //при клике на карточку открывается модальное окно
+CLOSE_MODAL = "modal:close",//приклике на креситк закрывется модальное окно
+ADD_CART = "cart:changed",//добавить продукт в корзину
+OPEN_CART = "cart:open",//открыти корзины
+DELETE_PRODUCT = "product:remove"//удаление продукта из корзины
+MAKING_AN_ORDER = "making-order:open"//переход к оформлению заказа
+PAYMENT_METHOD = "payment:changed"//способ оплаты
+FILLING_IN_FIELDS_WHITH_DATE = "data-field:changed"//заполняем поля данными 
+ORDER_COMPLETION = "order-completion:post"//заказ оформлен
+}
+
+
