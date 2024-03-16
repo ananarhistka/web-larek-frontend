@@ -7,11 +7,11 @@ export interface Product {
 }
 
 export interface AddProduct {
-  addToCart: ()=> void;
-  removeFromeCars: ()=> void;
+  addToCart: () => void;
+  removeFromeCars: () => void;
 }
 
-export interface CartProduct { 
+export interface CartProduct {
   id: number;
   name: string;
   price: number;
@@ -34,4 +34,11 @@ export interface DeliveryAddress {
 export interface MakingAnOrder {
   amail: string;
   phone: string;
+}
+//главная страница, отслеживание
+export interface MainPage {
+  cart: ProductItem[]; //выбранные продукты в корзине
+  preview: ProductItem; //просмотр продукта
+  directory: ProductItem[]; //все категории
+  orderProducr: AddProduct;//отслеживание продуктов в корзине
 }
