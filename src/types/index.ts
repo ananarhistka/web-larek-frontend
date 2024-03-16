@@ -20,7 +20,7 @@ export interface Cart {
   totalPrice: number;
 }
 
-type CartItem = Product & Cart ;
+type CartItem = Product & Cart;
 
 export interface DeliveryAddress {
   adress: string | number;
