@@ -6,9 +6,11 @@ export interface Product {
   category: LotSection;
 }
 
+//отслеживание добавился ли продукт
 export interface AddProduct {
-  addToCart: () => void;
-  removeFromeCars: () => void;
+  addProductToCart: boolean;
+  addToCart: () => void;//добавить
+  removeFromeCars: () => void;//удалить
 }
 
 export interface CartProduct {
@@ -19,6 +21,7 @@ export interface CartProduct {
   image: string;
 }
 
+//просмотр корзины с продуктом
 export interface Cart {
   products: CartProduct[];
   totalPrice: number;
@@ -35,6 +38,7 @@ export interface MakingAnOrder {
   amail: string;
   phone: string;
 }
+
 //главная страница, отслеживание
 export interface MainPage {
   cart: ProductItem[]; //выбранные продукты в корзине
