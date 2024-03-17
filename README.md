@@ -60,8 +60,9 @@ yarn build
 ```ts
 1. baseUrl: string - используемый домен сервера.
 2. options: RequestInit - параметры запроса.
-
+```
 Методы:
+```ts
 1. constructor(baseUrl: string, options: RequestInit = {}) - конструктор класса, принимает базовый URL сервера и параметры запроса.
 2. handleResponse(response: Response) - обрабатывает ответ сервера и возвращает либо полученные данные JSON, либо сообщение об ошибке.
 3. get(uri: string) - реализация метода GET для выполнения запроса на получение данных с сервера.
@@ -69,9 +70,39 @@ yarn build
 ```
 Все методы выполняют запросы с использованием fetch API и обрабатывают ответы сервера. Класс Api обеспечивает возможность выполнения запросов GET и POST к API сервера, а также обработку ответов сервера для получения данных или сообщений об ошибках.
 
-## 2-Component
+## 2-Component<T>
 
-Базовый класс представляет собой абстрактный компонент, который может использоваться для создания других компонентов на веб-странице. Он содержит методы для управления различными аспектами DOM-элементов, такие как переключение классов, установка текстового содержимого, изменение статуса блокировки, скрытие и показ элементов, установка изображений
+Класс Component<T> представляет собой абстрактный класс для создания компонентов с определенным типом данных T. В конструктор класса Component<T> приходят следующие данные:
+
+1. container: HTMLElement - элемент DOM, в который будет встроен компонент.
+2. events: IEvents - интерфейс, определяющий возможные события компонента.
+```ts
+Класс Component<T> выполняет следующие функции:
+
+1. toggleClass(element: HTMLElement, className: string, force?: boolean) - переключение класса у элемента.
+2. setText(element: HTMLElement, value: unknown) - установка текстового содержимого элемента.
+3. setDisabled(element: HTMLElement, state: boolean) - изменение статуса блокировки элемента.
+4. setHidden(element: HTMLElement) - скрытие элемента.
+5. setVisible(element: HTMLElement) - отображение элемента.
+6. setImage(element: HTMLElement, src: string, alt?: string) - установка изображения с альтернативным текстом.
+7. render(data?: Partial<T>): HTMLElement - возвращает корневой DOM-элемент компонента, применяя частичные данные для рендеринга.
+```
+Поля, методы и сеттеры класса Component<T>:
+```ts
+Поля:
+1. container (тип: HTMLElement) - элемент DOM, в который будет встроен компонент.
+2. events (тип: IEvents) - интерфейс событий компонента.
+
+Методы:
+1. toggleClass(element: HTMLElement, className: string, force?: boolean) - переключает класс у элемента.
+2. setText(element: HTMLElement, value: unknown) - устанавливает текстовое содержимое элемента.
+3. setDisabled(element: HTMLElement, state: boolean) - изменяет статус блокировки элемента.
+4. setHidden(element: HTMLElement) - скрывает элемент.
+5. setVisible(element: HTMLElement) - отображает элемент.
+6. setImage(element: HTMLElement, src: string, alt?: string) - устанавливает изображение с альтернативным текстом.
+7. render(data?: Partial<T>): HTMLElement - возвращает корневой DOM-элемент компонента с применёнными данными.
+```
+Класс Component<T> служит для создания компонентов с определенным типом данных и предоставляет методы для работы с DOM-элементами и их состояниями.
 
 ## 3-EventEmitter
 
@@ -89,13 +120,39 @@ EventEmitter класс, который представляет собой ре
 
 ## 1-MainPage
 
-Класс MainPage описывает состояние приложения и содержит методы для работы с каталогом товаров, корзиной покупок, заказом и предварительным просмотром товара.
+Класс MainPage принимает данные следующего типа в конструкторе:
+``` ts
+constructor(data: Partial<MainPage>, events: IEvents) {}
+```
+Где data представляет частичные данные типа MainPage, а events представляет объект событий типа IEvents.
 
-Свойство directory содержит массив лотов, свойство orderProducr содержит информацию о заказе, а preview - предпросмотр лота.
+Класс MainPage предназначен для управления состоянием главной страницы приложения, отображения выбранных продуктов в корзине, просмотра продукта, отображения всех категорий и отслеживания продуктов в корзине.
+```ts
+Поля класса MainPage:
+1. cart: CartItem - выбранные продукты в корзине
+2. preview: CartItem - просматриваемый продукт
+3. directory: CartItem - все категории
+4. orderProducr: Cart - отслеживание продуктов в корзине
 
-## 2-CartProduct
+Методы класса MainPage:
+1. setCart(items: CartItem): void - устанавливает выбранные продукты в корзине
+2. getCart(): CartItem - возвращает выбранные продукты в корзине
+3. setPreview(item: CartItem): void - устанавливает просматриваемый продукт
+4. getPreview(): CartItem - возвращает просматриваемый продукт
+5. setDirectory(items: CartItem): void - устанавливает все категории
+6. getDirectory(): CartItem - возвращает все категории
+7. setOrderProduct(order: Cart): void - устанавливает отслеживаемые продукты в корзине
+8. getOrderProduct(): Cart - возвращает отслеживаемые продукты в корзине
+```
+Типы данных:
+- CartItem - интерфейс, представляющий данные о продуктах в корзине с учетом категории и общей цены
+- Cart - интерфейс, представляющий данные о заказе продуктов
 
-Класс CartProduct описывает отдельный лот товара.
+Класс MainPage выполняет функции управления состоянием главной страницы приложения, отображения информации о продуктах в корзине, просмотра выбранного продукта, отображения категорий и отслеживания продуктов в корзине.
+
+## 2-CardProduct
+
+Класс CardProduct описывает отдельный лот товара.
 
 В классе CartProduct определены следующие свойства:
 
@@ -107,7 +164,26 @@ EventEmitter класс, который представляет собой ре
 
 ## 3-CartItem
 
-Класс CartItem представляет собой модель заказа, содержит описание карточек.
+Класс CartItem представляет собой комбинированный объект, который объединяет данные о продукте (Product) и информацию о корзине (Cart).
+
+Поля класса CartItem:
+1. products: массив объектов типа CardProduct - карточка товара
+2. category: строковое значение из перечисления типов LotSection - категория продуктов в корзине
+3. totalPrice: число - общая цена продуктов в корзине
+```ts
+Методы и сеттеры класса CartItem:
+1. getProducts(): CardProduct - возвращает массив продуктов в корзине
+2. getCategory(): LotSection - возвращает категорию продуктов
+3. getTotalPrice(): number - возвращает общую цену продуктов в корзине
+4. setProducts(products: CardProduct): void - устанавливает продукты в корзине
+5. setCategory(category: LotSection): void - устанавливает категорию продуктов
+6. setTotalPrice(totalPrice: number): void - устанавливает общую цену продуктов в корзине
+```
+Методы и сеттеры класса CartItem:
+Отсутствуют, так как CartItem представляет собой комбинированный объект, а не класс с методами и сеттерами.
+
+Тип данных:
+- CartItem - комбинированный тип данных, содержащий информацию о продукте (Product) и корзине (Cart)
 
 ## Компоненты представления
 
@@ -117,34 +193,36 @@ Cart:
 Представляет информацию о содержимом корзины.
 
  Свойства:
-  - products: массив продуктов типа CartProduct.
-  - totalPrice: общая стоимость продуктов в корзине.
-
+ ```ts
+  1.products: CardProduct[] - массив продуктов типа CartProduct.
+  2.totalPrice: number - общая стоимость продуктов в корзине.
+```
 ## 2 DeliveryAddress
 
 DeliveryAddress:
 Предоставляет информацию об адресе доставки и методе оплаты.
-
+```ts
  Свойства:
-  - address: адрес доставки (строка или число).
-  - payment: метод оплаты типа PaymentMethod.
-
+  1.adress: string | number - адрес доставки (строка или число).
+  2.payment: PaymentMethod - метод оплаты типа PaymentMethod. 
+```
 ## 3 MakingAnOrder
 
 MakingAnOrder:
 Предоставляет информацию для выполнения заказа.
-
+```ts
  Свойства:
-  - email: адрес электронной почты заказчика.
-  - phone: номер телефона заказчика.
-
+  1.amail: string - адрес электронной почты заказчика.
+  2.phone: string - номер телефона заказчика.
+```
 ## Ключевые типы данных
 //карточки на главной странице
+```ts
 interface Product {
-  - products: CartProduct[];//описание карточек
-  - category: LotSection;//категории
+  products: CartProduct[];//описание карточек
+  category: LotSection;//категории
 }
-
+```
 ```ts
 
 //описание карточки 
@@ -172,12 +250,11 @@ enum Events {
       CLICK_PRODUCTS = "card:open", //кликнули по карточке
       OPEN_MODAL = "modal:open", //при клике на карточку открывается модальное окно
       CLOSE_MODAL = "modal:close",//приклике на креситк закрывется модальное окно
-      ADD_CART = "cart:changed",//добавить продукт в корзину
+      CHANGING_PRODUCT_CART = "cart:changed",//добавить продукт в корзину
       OPEN_CART = "cart:open",//открыти корзины
-      DELETE_PRODUCT = "product:remove"//удаление продукта из корзины
-      MAKING_AN_ORDER = "making-order:open"//переход к оформлению заказа
-      PAYMENT_METHOD = "payment:changed"//способ оплаты
-      FILLING_IN_FIELDS_WHITH_DATE = "data-field:changed"//заполняем поля данными 
-      ORDER_COMPLETION = "order-completion:post"//заказ оформлен
+      MAKING_AN_ORDER = "making-order:open",//переход к оформлению заказа
+      PAYMENT_METHOD = "payment:changed",//способ оплаты
+      FILLING_IN_FIELDS_WHITH_DATE = "data-field:changed",//заполняем поля данными 
+      ORDER_COMPLETION = "order-completion:post",//заказ оформлен
 }
 ```
