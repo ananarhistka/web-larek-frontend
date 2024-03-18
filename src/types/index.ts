@@ -16,21 +16,47 @@ enum Events {
 }
 
 export interface Product {
-  products: CardProduct[];
+ // products: CardProduct[];
   category: LotSection;
 }
-
-export interface CardProduct {
-  id: number;
+//карточка товара
+export interface IProduct {
+  id: string;
   name: string;
   price: number;
   description: string;
   image: string;
 }
 
+//интерфейс для хранения списка товаров
+export interface CartlogoModal {
+  items: IProduct[];
+  setItems(items: IProduct[]): void;//чтобы установить после загрузки из апи
+  getProduct(id: string): IProduct[];//чтобы получить при загрузки из апи
+}
+
+//изменение количество товара в корзине
+export interface ICartModel {
+  items: Map<string, number>;
+  add(id: string): void;
+  remove(id: string): void;
+}
+
+export interface IEventEmitter {
+  emit: (event: string, data: unknown) => void;
+}
+//для конструктора
+export interface IViewConsstructor {
+  new (container: HTMLElement, events?: IEventEmitter): IView;//на входе контейнер, в него будем выводиьт
+}
+//для самого класса отображения
+export interface IView {
+  render(data?: object): HTMLElement;//устанавливаем данные возвращаем контейнер
+}
+
 //просмотр корзины с продуктом
 export interface Cart {
-  products: CardProduct[];
+ // products: CardProduct[];
   totalPrice: number;
 }
 
