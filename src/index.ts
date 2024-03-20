@@ -1,5 +1,5 @@
 
-import './scss/styles.scss';
+/*import './scss/styles.scss';
 
 import { EventEmitter } from './components/base/events';
 import { ICartModel, IEventEmitter, CartlogoModal, IView, IViewConstructor } from './types';
