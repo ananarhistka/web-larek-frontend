@@ -304,6 +304,15 @@ export interface MainPage {
   preview: CartItem; //модальное окно карточки
   getFullPrice: number;//получить поную стоймось заказа
 }
+
+// оформление заказа
+export interface IOrder extends MakingAnOrder {
+  list: ProductWithCart[];
+  checkingTheAddress(): void;
+  checkingThePhone(): void;
+  checkingEmail(): void;
+  completingTheOrder(): void;
+}
 ```
 
 ```ts
