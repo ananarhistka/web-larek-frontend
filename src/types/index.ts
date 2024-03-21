@@ -5,7 +5,7 @@ export type PaymentMethod = "онлайн" | "при получении"
 export interface IProduct {
   id: string;
   name: string;
-  price: number;
+  price: number | null;
   description: string;
   image: string;
   sector: LotSection[];

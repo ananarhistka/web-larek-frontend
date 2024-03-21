@@ -1,7 +1,7 @@
 
-/*import './scss/styles.scss';
+import './scss/styles.scss';
 
-import { EventEmitter } from './components/base/events';
+/*import { EventEmitter } from './components/base/events';
 import { ICartModel, IEventEmitter, CartlogoModal, IView, IViewConstructor } from './types';
 
 
@@ -108,4 +108,4 @@ eventsEmitter.on("ui:basket-remove", (event: { id: string }) => {
 
 api.getCatalog()
   .then(catalogModel.setItems.bind(catalogModel))
-  .catch(err => console.error(err));
+  .catch(err => console.error(err));*/
