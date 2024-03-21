@@ -1,6 +1,32 @@
 
 import './scss/styles.scss';
+import { EventEmitter } from './components/base/events';
+import { WebLarekApi } from './components/WebLarekApi';
+import { API_URL, CDN_URL } from './utils/constants';
+import { IOrder, ProductWithCart } from './types';
 
+
+const events = new EventEmitter();
+const api = new WebLarekApi(CDN_URL, API_URL);
+
+async function load(): Promise<void> {
+
+  const list = await api.getLotList();
+  const gallery = document.querySelector('.gallery');
+
+  console.log('[load]', list);
+  list.forEach((item: ProductWithCart & {category: string}) => {
+    console.log('[item]', item);
+    
+    const element = document.createElement('div');
+    element.innerHTML = `
+      <p>Что за херня тту происходит! ${item.category}</p>
+    `
+    gallery.appendChild(element)
+  })
+}
+
+load();
 /*import { EventEmitter } from './components/base/events';
 import { ICartModel, IEventEmitter, CartlogoModal, IView, IViewConstructor } from './types';
 
