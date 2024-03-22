@@ -42,19 +42,6 @@ events.onAll(({ eventName, data }) => {
   console.log(eventName, data);
 })
 
-events.on<DirectoryEvent>('directory:changed', () => {
-	page.directory = appData.directory.map((item) => {
-		const card = new Card('card', cloneTemplate(cardCatalogTemplet), {
-			onClick: () => events.emit('card:select', item),
-		});
-		return card.render({
-			title: item.title,
-			image: item.image,
-			price: item.price,
-			directory: item.directory,
-		});
-	});
-});
 
 async function load(): Promise<void> {
 
