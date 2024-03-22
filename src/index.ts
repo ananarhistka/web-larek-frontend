@@ -43,6 +43,7 @@ events.onAll(({ eventName, data }) => {
 })
 
 
+
 async function load(): Promise<void> {
 
   const list = await api.getLotList();

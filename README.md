@@ -301,7 +301,7 @@ export interface MainPage {
 }
 
 // оформление заказа
-export interface IOrder extends MakingAnOrder {
+export interface IOrderEvent extends MakingAnOrder {
   list: ProductWithCart[];
   checkingTheAddress(): void;
   checkingThePhone(): void;
