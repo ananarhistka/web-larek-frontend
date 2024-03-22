@@ -1,8 +1,13 @@
-import { MainPage } from '../types';
+import { MainPage, ProductWithCart, IOrderEvent } from '../types';
 import {Model} from "./base/Model";
 
 export class CatalogModel extends Model<MainPage> {
-  id: string;
-  price: number|null;
-  image: string;
-}
+  directory: ProductWithCart[];
+  card: ProductWithCart[];
+  order: IOrderEvent = {
+		email: "",
+		phone: "",
+		items: [],
+		address: "",
+		payment: "",
+};

@@ -1,10 +1,10 @@
 import { Api, ApiListResponse } from './base/api';
-import { IOrder, ProductWithCart } from '../types';
+import { IOrderEvent, ProductWithCart } from '../types';
 
 export interface IWebLarekApi {
   getLotList: () => Promise<ProductWithCart[]>;
   getLotItem: (id: string) => Promise<ProductWithCart>;
-  orderLots: (order: IOrder) => Promise<IOrder>;
+  orderLots: (order: IOrderEvent) => Promise<IOrderEvent>;
 }
 
 export class WebLarekApi extends Api implements IWebLarekApi {
@@ -32,7 +32,7 @@ export class WebLarekApi extends Api implements IWebLarekApi {
     }));
   }
 
-  orderLots(order: IOrder): Promise<IOrder> {
-    return this.post('/order', order).then((data: IOrder) => data);
+  orderLots(order: IOrderEvent): Promise<IOrderEvent> {
+    return this.post('/order', order).then((data: IOrderEvent) => data);
   }
 }

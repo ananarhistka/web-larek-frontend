@@ -4,10 +4,10 @@ import { EventEmitter } from './components/base/events';
 import { WebLarekApi } from './components/WebLarekApi';
 import { CatalogModel } from './components/AppData';
 import { API_URL, CDN_URL } from './utils/constants';
-import { ProductWithCart } from './types';
+import { ProductWithCart, DirectoryEvent } from './types';
 import { Page } from './components/WebPage';
 import { Modal } from './components/common/Modal';
-import { ensureElement } from './utils/utils';
+import { ensureElement, cloneTemplate } from './utils/utils';
 
 const events = new EventEmitter();
 const api = new WebLarekApi(CDN_URL, API_URL);
@@ -41,6 +41,20 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 events.onAll(({ eventName, data }) => {
   console.log(eventName, data);
 })
+
+events.on<DirectoryEvent>('directory:changed', () => {
+	page.directory = appData.directory.map((item) => {
+		const card = new Card('card', cloneTemplate(cardCatalogTemplet), {
+			onClick: () => events.emit('card:select', item),
+		});
+		return card.render({
+			title: item.title,
+			image: item.image,
+			price: item.price,
+			directory: item.directory,
+		});
+	});
+});
 
 async function load(): Promise<void> {
 
