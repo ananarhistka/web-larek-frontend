@@ -1,13 +1,46 @@
-
 import './scss/styles.scss';
+
 import { EventEmitter } from './components/base/events';
 import { WebLarekApi } from './components/WebLarekApi';
+import { CatalogModel } from './components/AppData';
 import { API_URL, CDN_URL } from './utils/constants';
-import { IOrder, ProductWithCart } from './types';
-
+import { ProductWithCart } from './types';
+import { Page } from './components/WebPage';
+import { Modal } from './components/common/Modal';
+import { ensureElement } from './utils/utils';
 
 const events = new EventEmitter();
 const api = new WebLarekApi(CDN_URL, API_URL);
+
+// Чтобы мониторить все события, для отладки
+events.onAll(({ eventName, data }) => {
+  console.log(eventName, data);
+});
+
+//карточки 
+const cardCatalogTemplet = ensureElement<HTMLTemplateElement>("#card-catalog");
+const cardPreviewTemplet = ensureElement<HTMLTemplateElement>("#card-preview");
+
+//оформление заказа
+const orderRegistration = ensureElement<HTMLTemplateElement>("#success");
+const orderTemplet = ensureElement<HTMLTemplateElement>("#order");
+const contactsTemplet = ensureElement<HTMLTemplateElement>("#contacts");
+
+//корзина
+const cardBasket = ensureElement<HTMLTemplateElement>("#card-basket");
+const Basket = ensureElement<HTMLTemplateElement>("#basket");
+
+// Модель данных приложения
+const appData = new CatalogModel({}, events);
+
+//глобальныые контейнера
+const page = new Page(document.body, events);
+const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
+
+
+events.onAll(({ eventName, data }) => {
+  console.log(eventName, data);
+})
 
 async function load(): Promise<void> {
 
@@ -27,6 +60,17 @@ async function load(): Promise<void> {
 }
 
 load();
+
+// Блокируем прокрутку страницы если открыта модалка
+events.on('modal:open', () => {
+  page.locked = true;
+});
+
+// ... и разблокируем
+events.on('modal:close', () => {
+  page.locked = false;
+});
+
 /*import { EventEmitter } from './components/base/events';
 import { ICartModel, IEventEmitter, CartlogoModal, IView, IViewConstructor } from './types';
 
@@ -130,8 +174,10 @@ eventsEmitter.on("ui:basket-add", (event: { id: string }) => {
 
 eventsEmitter.on("ui:basket-remove", (event: { id: string }) => {
   basketModel.remove(event.id);
-});
+});*/
 
-api.getCatalog()
-  .then(catalogModel.setItems.bind(catalogModel))
-  .catch(err => console.error(err));*/
+
+
+api.getLotList()
+  .then(appData.setItems.bind(appData))
+  .catch(err => console.error(err));

@@ -15,7 +15,7 @@ export class Page extends Component<IPage> {
   protected _basket: HTMLElement;
 
   constructor(container: HTMLElement, protected events: IEvents) {
-    super(container);
+    super(container, events);
 
     this._counter = ensureElement<HTMLElement>('.header__basket-counter');
     this._catalog = ensureElement<HTMLElement>('.gallery');
@@ -23,7 +23,7 @@ export class Page extends Component<IPage> {
     this._basket = ensureElement<HTMLElement>('.header__basket');
 
     this._basket.addEventListener('click', () => {
-      this.events.emit('bids:open');
+      this.events.emit('card:open');
     });
   }
 
@@ -43,3 +43,4 @@ export class Page extends Component<IPage> {
     }
   }
 }
+

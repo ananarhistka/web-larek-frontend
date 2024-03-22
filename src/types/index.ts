@@ -86,6 +86,10 @@ export interface CartlogoModal {
   getProduct(id: string): IProduct[]; // чтобы получить при загрузки из апи
 }
 
+export type DirectoryEvent = {
+  directore: ProductWithCart[];
+}
+
 export type MakingAnOrder = ICustomerAddress & ICustomer;
 
 // оформление заказа
