@@ -9,6 +9,7 @@ export interface IProduct {
   description: string;
   image: string;
   sector: LotSection[];
+  button?: boolean;
 }
 
 // работа с корзиной
@@ -77,6 +78,7 @@ export interface MainPage {
   cart: ProductWithCart[]; //выбранные продукты в корзине
   preview: ProductWithCart; //модальное окно карточки
   getFullPrice: number;//получить поную стоймось заказа
+  order: IOrderEvent | null;
 }
 
 // интерфейс для хранения списка товаров
@@ -100,6 +102,30 @@ export interface IOrderEvent extends MakingAnOrder {
   checkingEmail(): void;
   completingTheOrder(): void;
 }
+
+export class OrdetEvent implements IOrderEvent {
+
+  list: ProductWithCart[] = [];
+  address: string | number;
+  payment: PaymentMethod;
+  email: string;
+  phone: string;
+
+  checkingTheAddress(): void {
+
+  }
+  checkingThePhone(): void {
+
+  }
+  checkingEmail(): void {
+
+  }
+  completingTheOrder(): void {
+
+  }
+}
+
+export type IFormErrors = Partial<Record<keyof MakingAnOrder, string>>;
 
 export enum Events {
   CATALOG_PRODUCTS = "product:changed", //все категории карточек

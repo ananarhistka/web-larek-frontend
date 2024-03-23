@@ -2,10 +2,11 @@ import './scss/styles.scss';
 
 import { EventEmitter } from './components/base/events';
 import { WebLarekApi } from './components/WebLarekApi';
-import { CatalogModel } from './components/AppData';
+import { AppState } from './components/AppData';
 import { API_URL, CDN_URL } from './utils/constants';
 import { ProductWithCart, DirectoryEvent } from './types';
 import { Page } from './components/WebPage';
+import { Card } from './components/Card';
 import { Modal } from './components/common/Modal';
 import { ensureElement, cloneTemplate } from './utils/utils';
 
@@ -31,7 +32,7 @@ const cardBasket = ensureElement<HTMLTemplateElement>("#card-basket");
 const Basket = ensureElement<HTMLTemplateElement>("#basket");
 
 // Модель данных приложения
-const appData = new CatalogModel({}, events);
+const appData = new AppState({}, events);
 
 //глобальныые контейнера
 const page = new Page(document.body, events);
@@ -40,28 +41,21 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
 events.onAll(({ eventName, data }) => {
   console.log(eventName, data);
-})
+});
 
-
-
-async function load(): Promise<void> {
-
-  const list = await api.getLotList();
-  const gallery = document.querySelector('.gallery');
-
-  console.log('[load]', list);
-  list.forEach((item: ProductWithCart & {category: string}) => {
-    console.log('[item]', item);
-    
-    const element = document.createElement('div');
-    element.innerHTML = `
-      <p>Что за херня тту происходит! ${item.category}</p>
-    `
-    gallery.appendChild(element)
-  })
-}
-
-load();
+events.on<DirectoryEvent>('directory:changed', () => {
+  page.sector = appData.catalog.map((directoryItem) => {
+    const card = new Card('card', cloneTemplate(cardCatalogTemplet), {
+      onClick: () => events.emit('card:select', directoryItem),
+    });
+    return card.render({
+      name: directoryItem.name,
+      image: directoryItem.image,
+      price: directoryItem.price,
+      sector: directoryItem.sector,
+    });
+  });
+});
 
 // Блокируем прокрутку страницы если открыта модалка
 events.on('modal:open', () => {
