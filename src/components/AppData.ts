@@ -26,5 +26,10 @@ export class AppState extends Model<MainPage> {
 	order: IOrderEvent = new OrdetEvent();
 	preview: string | null;
 	formErrors: IFormErrors = {};
+
+	constructor(data: Partial<MainPage>, events: IEvents) {
+		super(data, events);
+		this.events = events;
+	}
 }
 

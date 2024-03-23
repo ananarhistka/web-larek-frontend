@@ -42,17 +42,17 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 events.onAll(({ eventName, data }) => {
   console.log(eventName, data);
 });
-
-events.on<DirectoryEvent>('directory:changed', () => {
-  page.sector = appData.catalog.map((directoryItem) => {
+//прослушиванеи события
+events.on<DirectoryEvent>('catalog:changed', () => {
+  page.sector = appData.catalog.map((catalogItem) => {
     const card = new Card('card', cloneTemplate(cardCatalogTemplet), {
-      onClick: () => events.emit('card:select', directoryItem),
+      onClick: () => events.emit('card:select', catalogItem),
     });
     return card.render({
-      name: directoryItem.name,
-      image: directoryItem.image,
-      price: directoryItem.price,
-      sector: directoryItem.sector,
+      name: catalogItem.name,
+      image: catalogItem.image,
+      price: catalogItem.price,
+      sector: catalogItem.sector,
     });
   });
 });
