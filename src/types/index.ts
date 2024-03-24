@@ -1,14 +1,14 @@
-export type LotSection = "софт-скил" | "другое" | "дополнительное" | "кнопка" | "хард-скил";
+export type ProductCategory = "софт-скил" | "другое" | "дополнительное" | "кнопка" | "хард-скил";
 export type PaymentMethod = "онлайн" | "при получении"
 
-// интерфейс по хранению товаа
+// интерфейс по хранению товара
 export interface IProduct {
   id: string;
-  name: string;
+  title: string;
   price: number | null;
   description: string;
   image: string;
-  sector: LotSection[];
+  category: ProductCategory;
   button?: boolean;
 }
 
@@ -75,7 +75,7 @@ export type ProductWithCart = IProduct & IProductAction;
 //интерфейс главной страницы
 export interface MainPage {
   directory: ProductWithCart[]; //список всех карточек на странице
-  cart: ProductWithCart[]; //выбранные продукты в корзине
+  card: ProductWithCart[]; //выбранные продукты в корзине
   preview: ProductWithCart; //модальное окно карточки
   getFullPrice: number;//получить поную стоймось заказа
   order: IOrderEvent | null;
@@ -129,15 +129,16 @@ export type IFormErrors = Partial<Record<keyof MakingAnOrder, string>>;
 
 export enum Events {
   CATALOG_PRODUCTS = "product:changed", //все категории карточек
+  LOT_CHANGED = "lot:changed", //изменение в карточках товара
   HOVER_PRODUCTS = "product:hover",//навели на карточку
-  CLICK_PRODUCTS = "card:open", //кликнули по карточке
-  OPEN_MODAL = "modal:open", //при клике на карточку открывается модальное окно
+  CLICK_PRODUCTS = "cart:open", //кликнули по карточке
+  PRODUCT_OPEN = "product:open", //при клике на карточку открывается модальное окно
+  PRODUCT_ADD_TO_CART = "product:add",//добавить продукт в корзину
   CLOSE_MODAL = "modal:close",//приклике на креситк закрывется модальное окно
-  CHANGING_PRODUCT_CART = "cart:changed",//добавить продукт в корзину
-  OPEN_CART = "cart:open",//открыти корзины
-  DELETE_PRODUCT ="prodact:remove",//удалить продукт из корзины
+  OPEN_CARD = "card:open",//открыти корзины
+  DELETE_PRODUCT ="product:remove",//удалить продукт из корзины
   MAKING_AN_ORDER = "making-order:open",//переход к оформлению заказа
   PAYMENT_METHOD = "payment:changed",//способ оплаты
-  FILLING_IN_FIELDS_WHITH_DATE = "data-field:changed",//заполняем поля данными 
+  FILLING_IN_FIELDS_WITH_DATE = "data-field:changed",//заполняем поля данными
   ORDER_COMPLETION = "order-completion:complete",//заказ оформлен
 }

@@ -33,7 +33,7 @@ export function ensureElement<T extends HTMLElement>(selectorElement: SelectorEl
         if (elements.length > 1) {
             console.warn(`selector ${selectorElement} return more then one element`);
         }
-        if (elements.length === 0) {
+        if (!elements?.length) {
             throw new Error(`selector ${selectorElement} return nothing`);
         }
         return elements.pop() as T;

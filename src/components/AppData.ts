@@ -1,4 +1,14 @@
-import { IFormErrors, MainPage, ProductWithCart, IOrderEvent, MakingAnOrder, PaymentMethod, OrdetEvent } from '../types';
+import {
+	IFormErrors,
+	MainPage,
+	ProductWithCart,
+	IOrderEvent,
+	MakingAnOrder,
+	PaymentMethod,
+	OrdetEvent,
+	ProductCategory,
+	IProduct, Events, ICart,
+} from '../types';
 import { Model } from "./base/Model";
 import { IEvents } from './base/events';
 
@@ -9,20 +19,20 @@ export type CatalogChangeEvent = {
 //модель элемента лота
 export class ProductItem extends Model<ProductWithCart> {
 	id: string;
-	name: string;
+	title: string;
 	about: string;
 	description: string;
 	image: string;
 	price: number | null;
 	isOrdered: boolean;
-	sector: string;
+	category: ProductCategory;
 	status: IOrderEvent;
 }
 
 //модель текущего состояния
 export class AppState extends Model<MainPage> {
-	basket: ProductWithCart[];
-	catalog: ProductWithCart[];
+	basket: ICart;
+	catalog: ProductItem[];
 	order: IOrderEvent = new OrdetEvent();
 	preview: string | null;
 	formErrors: IFormErrors = {};
@@ -31,5 +41,77 @@ export class AppState extends Model<MainPage> {
 		super(data, events);
 		this.events = events;
 	}
+
+	setCatalog(items: IProduct[]) {
+		this.catalog = items.map((item) => new ProductItem(item, this.events));
+		this.emitChanges(Events.CATALOG_PRODUCTS, { catalog: this.catalog });
+	}
+
+	setPreview(item: ProductItem): void {
+		this.preview = item.id;
+		this.emitChanges(Events.CLICK_PRODUCTS, item);
+	}
+
+	addToBasket(item: ProductItem): void {
+		this.catalog.map((el) => {
+			if (item.id === el.id) {
+				el.isOrdered = true;
+			}
+		});
+
+		this.emitChanges(Events.LOT_CHANGED, item);
+	}
+
+	deleteFromBasket(item: ProductItem): void {
+		this.catalog.map((el) => {
+			if (item.id === el.id) {
+				el.isOrdered = false;
+			}
+		});
+
+		this.emitChanges(Events.LOT_CHANGED, item);
+	}
+	clearBasket(): void {
+		this.catalog.forEach((el) => {
+			el.isOrdered = false;
+		});
+		this.emitChanges(Events.LOT_CHANGED);
+	}
+
+	deleteFromBasketTotal(item: ProductItem): void {
+		this.catalog.map((el) => {
+			if (item.id === el.id) {
+				el.isOrdered = false;
+			}
+		});
+		this.emitChanges(Events.LOT_CHANGED, item);
+	}
+
+	basketOnWheels(item: ProductItem): void {
+		console.log('[basketOnWheels]', item);
+		if (item.isOrdered) {
+			this.deleteFromBasket(item);
+		} else {
+			this.addToBasket(item);
+		}
+		this.reCalcBasket();
+	}
+
+	private reCalcBasket(): void {
+		const productsInBasket = this.catalog.filter((item) => item.isOrdered);
+		this.basket = {
+			totalPrice: productsInBasket.reduce((acc, item) => acc + item.price, 0),
+			products: productsInBasket,
+		}
+	}
+	getSelectedProducts = (): IProduct[] => this.catalog.filter((item) => item.isOrdered);
+
+	getFull() {
+		return this.catalog
+			.filter((item) => item.isOrdered)
+			.reduce((acc, el) => acc + el.price, 0);
+	}
 }
+
+
 
