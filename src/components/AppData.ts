@@ -4,7 +4,6 @@ import {
 	ProductWithCart,
 	IOrderEvent,
 	MakingAnOrder,
-	PaymentMethod,
 	OrdetEvent,
 	ProductCategory,
 	IProduct, Events, ICart,
@@ -88,7 +87,6 @@ export class AppState extends Model<MainPage> {
 	}
 
 	basketOnWheels(item: ProductItem): void {
-		console.log('[basketOnWheels]', item);
 		if (item.isOrdered) {
 			this.deleteFromBasket(item);
 		} else {
@@ -110,6 +108,50 @@ export class AppState extends Model<MainPage> {
 		return this.catalog
 			.filter((item) => item.isOrdered)
 			.reduce((acc, el) => acc + el.price, 0);
+	}
+	setRequiredFieldToFillIn(field: keyof MakingAnOrder, value: string) {
+		this.order[field] = value;
+
+		if (this.validateOrderAddress()) {
+			this.events.emit('order:ready', this.order);
+		}
+
+		if (this.validateOrderContact()) {
+			this.events.emit('order:ready', this.order);
+		}
+	}
+
+	validateOrderAddress() {
+		const errors: typeof this.formErrors = {};
+
+		if (!this.order.address) {
+			errors.address = 'Необходимо указать адрес';
+		}
+		if (!this.order.payment) {
+			errors.payment = 'Необходимо указать способ оплаты';
+		}
+
+		this.formErrors = errors;
+		this.events.emit('formErrors:change', this.formErrors);
+
+		return Object.keys(errors).length === 0;
+	}
+
+	validateOrderContact() {
+		const errors: typeof this.formErrors = {};
+
+		if (!this.order.email) {
+			errors.email = 'Необходимо указать email';
+		}
+
+		if (!this.order.phone) {
+			errors.phone = 'Необходимо указать телефон';
+		}
+
+		this.formErrors = errors;
+		this.events.emit('formErrorsContact:change', this.formErrors);
+
+		return Object.keys(errors).length === 0;
 	}
 }
 

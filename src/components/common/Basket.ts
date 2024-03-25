@@ -28,7 +28,7 @@ export class Basket extends Component<IBasketView> {
 				this._button.disabled = true;
 			}
 			this._button.addEventListener('click', () => {
-				// events.emit(Events.OPEN_CARD);
+				events.emit(Events.MAKING_AN_ORDER);
 			});
 		}
 
@@ -57,5 +57,43 @@ export class Basket extends Component<IBasketView> {
 
 	set total(price: number) {
 		this.setText(this._total, `${price} синапсов`);
+	}
+}
+
+interface IProductOpenBasket {
+	id: number;
+	title: string;
+	price: string | number;
+}
+interface IClick {
+	onClick: (event: MouseEvent) => void;
+}
+export class BasketItem extends Component<IProductOpenBasket> {
+	protected _id: HTMLElement;
+	protected _title: HTMLElement;
+	protected _price: HTMLElement;
+	protected _button: HTMLButtonElement;
+	protected _prices: number[] = [];
+
+	constructor(container: HTMLElement, actions?: IClick) {
+		super(container);
+
+		this._id = ensureElement<HTMLElement>('.basket__item-index', container);
+		this._title = ensureElement<HTMLElement>('.card__title', container);
+		this._price = ensureElement<HTMLElement>('.card__price', container);
+		this._button = ensureElement<HTMLButtonElement>('.card__button', container);
+		this._button.addEventListener('click', actions.onClick);
+	}
+	set title(value: string) {
+		this.setText(this._title, value);
+	}
+
+	set id(value: number) {
+		this.setText(this._id, value);
+	}
+
+	set price(value: string) {
+		this.setText(this._price, `${value} синапсов`);
+		this._prices.push(parseFloat(value));
 	}
 }

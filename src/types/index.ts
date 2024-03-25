@@ -1,5 +1,4 @@
 export type ProductCategory = "софт-скил" | "другое" | "дополнительное" | "кнопка" | "хард-скил";
-export type PaymentMethod = "онлайн" | "при получении"
 
 // интерфейс по хранению товара
 export interface IProduct {
@@ -39,20 +38,20 @@ export interface ICustomer {
 
 export interface ICustomerAddress {
   address: string | number;
-  payment: PaymentMethod;
+  payment: string;
 }
 
 export interface IOrder {
   products: IProduct[];
   totalPrice: number;
   customer: ICustomer;
-  paymentMethod: PaymentMethod;
+  paymentMethod: string;
   address: string;
 }
 
 // Заполнение спороба оплаты и адреса доставки в модалке
 export interface FirstStageOrderModalAction {
-  selectPaymentMethod(paymentMethod: PaymentMethod): void;
+  selectPaymentMethod(paymentMethod: string): void;
   setAddress(address: string): void;
   // проверяем корректность данных, если есть ошибки, то блокируем кнопку "Продолжить"
   canMoveNextStage(): boolean;
@@ -94,6 +93,11 @@ export type DirectoryEvent = {
 
 export type MakingAnOrder = ICustomerAddress & ICustomer;
 
+export interface IMakingAnOrder extends MakingAnOrder {
+  items: string[];
+  total: number;
+}
+
 // оформление заказа
 export interface IOrderEvent extends MakingAnOrder {
   list: ProductWithCart[];
@@ -104,10 +108,9 @@ export interface IOrderEvent extends MakingAnOrder {
 }
 
 export class OrdetEvent implements IOrderEvent {
-
   list: ProductWithCart[] = [];
   address: string | number;
-  payment: PaymentMethod;
+  payment: string;
   email: string;
   phone: string;
 
@@ -130,7 +133,6 @@ export type IFormErrors = Partial<Record<keyof MakingAnOrder, string>>;
 export enum Events {
   CATALOG_PRODUCTS = "product:changed", //все категории карточек
   LOT_CHANGED = "lot:changed", //изменение в карточках товара
-  HOVER_PRODUCTS = "product:hover",//навели на карточку
   CLICK_PRODUCTS = "cart:open", //кликнули по карточке
   PRODUCT_OPEN = "product:open", //при клике на карточку открывается модальное окно
   PRODUCT_ADD_TO_CART = "product:add",//добавить продукт в корзину
@@ -138,7 +140,7 @@ export enum Events {
   OPEN_CARD = "card:open",//открыти корзины
   DELETE_PRODUCT ="product:remove",//удалить продукт из корзины
   MAKING_AN_ORDER = "making-order:open",//переход к оформлению заказа
-  PAYMENT_METHOD = "payment:changed",//способ оплаты
-  FILLING_IN_FIELDS_WITH_DATE = "data-field:changed",//заполняем поля данными
+  PAYMENT_METHOD = "payment:changed",//способ оплаты и адрес
+  CONFIRMATION_OF_FILLING_DATA = "order:complete",//подтвержение что форма заполнена верно
   ORDER_COMPLETION = "order-completion:complete",//заказ оформлен
 }
