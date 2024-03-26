@@ -21,29 +21,22 @@ events.onAll(({ eventName, data }) => {
   console.log(eventName, data);
 });
 
-//карточки 
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>("#card-catalog");
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>("#card-preview");
 
-//оформление заказа
 const orderRegistration = ensureElement<HTMLTemplateElement>("#success");
 const orderTemplate = ensureElement<HTMLTemplateElement>("#order");
 const contactsTemplate = ensureElement<HTMLTemplateElement>("#contacts");
 
-//корзина
-
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>("#card-basket")
 const basketTemplate = ensureElement<HTMLTemplateElement>("#basket");
 
-// Переиспользуемые части интерфейса
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const order = new CustomerAddress(cloneTemplate(orderTemplate), events);
 const customer = new Customer(cloneTemplate(contactsTemplate), events);
 
-// Модель данных приложения
 const appData = new AppState({}, events);
 
-//глобальные контейнера
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
@@ -102,7 +95,7 @@ events.on(Events.OPEN_CARD, () => {
 
   //событие удаление по кнопке в корзине
   events.on(Events.DELETE_PRODUCT, (item: ProductItem) => {
-    appData.deleteFromBasketTotal(item);
+    appData.deleteFromTheBasket(item);
   });
 
 //добавление в корзину и отрисовка добавленного

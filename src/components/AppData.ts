@@ -77,7 +77,7 @@ export class AppState extends Model<MainPage> {
 		this.emitChanges(Events.LOT_CHANGED);
 	}
 
-	deleteFromBasketTotal(item: ProductItem): void {
+	deleteFromTheBasket(item: ProductItem): void {
 		this.catalog.map((el) => {
 			if (item.id === el.id) {
 				el.isOrdered = false;
@@ -112,16 +112,16 @@ export class AppState extends Model<MainPage> {
 	setRequiredFieldToFillIn(field: keyof MakingAnOrder, value: string) {
 		this.order[field] = value;
 
-		if (this.validateOrderAddress()) {
+		if (this.validateOrderAddressPayment()) {
 			this.events.emit('order:ready', this.order);
 		}
 
-		if (this.validateOrderContact()) {
+		if (this.validateOrderData()) {
 			this.events.emit('order:ready', this.order);
 		}
 	}
 
-	validateOrderAddress() {
+	validateOrderAddressPayment() {
 		const errors: typeof this.formErrors = {};
 
 		if (!this.order.address) {
@@ -137,7 +137,7 @@ export class AppState extends Model<MainPage> {
 		return Object.keys(errors).length === 0;
 	}
 
-	validateOrderContact() {
+	validateOrderData() {
 		const errors: typeof this.formErrors = {};
 
 		if (!this.order.email) {

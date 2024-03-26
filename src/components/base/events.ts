@@ -65,7 +65,7 @@ export class EventEmitter implements IEvents {
     onAll(callback: (event: EmitterEvent) => void) {
         this.on("*", callback);
     }
-
+    
     /**
      * Сбросить все обработчики
      */

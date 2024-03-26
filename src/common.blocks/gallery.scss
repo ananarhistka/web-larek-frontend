@@ -5,6 +5,12 @@
   @include mixins.container;
   @include mixins.grid(600px, 24px);
 
+  .catalog__items {
+    display: grid;
+    grid-template-columns: 600px 600px;
+    grid-gap: 24px;
+  }
+
   &__item {
     border: none;
     border-radius: $defaultBorderRadius;
