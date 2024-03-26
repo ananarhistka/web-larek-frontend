@@ -16,11 +16,6 @@ import { Success } from './components/common/Success';
 const events = new EventEmitter();
 const api = new WebLarekApi(CDN_URL, API_URL);
 
-// Чтобы мониторить все события, для отладки
-events.onAll(({ eventName, data }) => {
-  console.log(eventName, data);
-});
-
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>("#card-catalog");
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>("#card-preview");
 
@@ -39,6 +34,11 @@ const appData = new AppState({}, events);
 
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
+
+// Чтобы мониторить все события, для отладки
+events.onAll(({ eventName, data }) => {
+  console.log(eventName, data);
+});
 
 //прослушивание события отрисовка карточек
 events.on<DirectoryEvent>(Events.CATALOG_PRODUCTS, () => {
@@ -127,15 +127,53 @@ events.on(Events.MAKING_AN_ORDER, () => {
   });
 });
 
+// Изменение состояния валидации форм доставка и способ оплаты
 events.on(Events.PAYMENT_METHOD , (errors: Partial<MakingAnOrder>) => {
   const { address, payment } = errors;
   order.valid = !address && !payment;
-  order.errors = Object.values({ address, payment })
-    .filter((i) => !!i)
-    .join('; ');
+  order.errors = Object.values({ address, payment }).filter((i) => !!i).join('; ');
 });
 
-// мадальное окно с телефоном
+// Изменение полей контактов и доставки
+events.on(
+  /^(order|contacts)\..*:change/,
+  (data: { field: keyof MakingAnOrder; value: string }) => {
+    appData.setRequiredFieldToFillIn(data.field, data.value);
+  }
+);
+
+//изменился способ оплаты
+events.on(
+  'payment:change',
+  (data: {
+    payment: 'cash' | 'online';
+    clickedButton: HTMLButtonElement;
+    otherButton: HTMLButtonElement;
+  }) => {
+    order.
+    switchActiveButton(data.clickedButton, data.otherButton);
+    appData.updatePaymentField(data.payment);
+    appData.validateOrderAddressPayment();
+  }
+);
+
+// Событие заполненности формы доставки
+events.on('delivery:ready' , () => {
+  order.valid = true;
+})
+
+events.on(Events.PAYMENT_METHOD, (errors: Partial<MakingAnOrder>) => {
+  const { email, phone } = errors;
+  customer.valid = !email && !phone;
+  customer.errors = Object.values({ phone, email }).filter((i) => !!i).join('; ');
+});
+
+// Событие заполненности формы контактов
+events.on('contact:ready', () => {
+  customer.valid = true;
+})
+
+// мадальное окно, заолнение телефона и почты
 events.on(Events.CONFIRMATION_OF_FILLING_DATA, () => {
   modal.render({
     content: customer.render({
@@ -147,21 +185,6 @@ events.on(Events.CONFIRMATION_OF_FILLING_DATA, () => {
   });
 });
 
-events.on(
-  /^(order|contacts)\..*:change/,
-  (data: { field: keyof MakingAnOrder; value: string }) => {
-    appData.setRequiredFieldToFillIn(data.field, data.value);
-  }
-);
-
-events.on(Events.PAYMENT_METHOD, (errors: Partial<MakingAnOrder>) => {
-  const { email, phone } = errors;
-  customer.valid = !email && !phone;
-  customer.errors = Object.values({ phone, email })
-    .filter((i) => !!i)
-    .join('; ');
-});
-
 events.on(Events.ORDER_COMPLETION, () => {
   api
     .orderLots({
@@ -170,16 +193,14 @@ events.on(Events.ORDER_COMPLETION, () => {
       items: appData.getSelectedProducts().map((el) => el.id),
     })
     .then((result) => {
+      appData.clearBasket();
       const success = new Success(cloneTemplate(orderRegistration), {
         onClick: () => {
           modal.close();
         },
       });
-      appData.clearBasket();
       modal.render({
-        content: success.render({
-          total: result.total,
-        }),
+        content: success.render({}),
       });
     })
     .catch((err) => {

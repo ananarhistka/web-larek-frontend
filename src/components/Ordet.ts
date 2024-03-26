@@ -52,8 +52,14 @@ export class CustomerAddress extends Form<ICustomerAddress> {
 		}
 	}
 
+
+	switchActiveButton(clickedButton: HTMLButtonElement, otherButton: HTMLButtonElement) {
+		clickedButton.classList.add('button_alt-active');
+		otherButton.classList.remove('button_alt-active');
+	}
+
 	set address(value: string) {
-		(this.container.elements?.namedItem('address') as HTMLInputElement).value =
+		(this.container.elements.namedItem('address') as HTMLInputElement).value =
 			'';
 	}
 

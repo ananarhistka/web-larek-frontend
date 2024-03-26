@@ -7,7 +7,7 @@ interface IBasketProductView {
 	product: IProduct;
 }
 
-export class CardBasket extends Component<IBasketProductView> {
+export class CartBasket extends Component<IBasketProductView> {
 	protected _title: HTMLElement;
 	protected _price: HTMLElement;
 	protected _button: HTMLButtonElement;

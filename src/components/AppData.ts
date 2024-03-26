@@ -4,35 +4,29 @@ import {
 	ProductWithCart,
 	IOrderEvent,
 	MakingAnOrder,
-	OrdetEvent,
+	OrderEvent,
 	ProductCategory,
 	IProduct, Events, ICart,
 } from '../types';
 import { Model } from "./base/Model";
 import { IEvents } from './base/events';
 
-export type CatalogChangeEvent = {
-	catalog: ProductWithCart[];
-};
-
 //модель элемента лота
 export class ProductItem extends Model<ProductWithCart> {
 	id: string;
 	title: string;
-	about: string;
 	description: string;
 	image: string;
 	price: number | null;
 	isOrdered: boolean;
 	category: ProductCategory;
-	status: IOrderEvent;
 }
 
 //модель текущего состояния
 export class AppState extends Model<MainPage> {
 	basket: ICart;
 	catalog: ProductItem[];
-	order: IOrderEvent = new OrdetEvent();
+	order: IOrderEvent = new OrderEvent();
 	preview: string | null;
 	formErrors: IFormErrors = {};
 
@@ -113,12 +107,16 @@ export class AppState extends Model<MainPage> {
 		this.order[field] = value;
 
 		if (this.validateOrderAddressPayment()) {
-			this.events.emit('order:ready', this.order);
+			this.events.emit(Events.CONFIRMATION_OF_FILLING_DATA, this.order);
 		}
 
 		if (this.validateOrderData()) {
-			this.events.emit('order:ready', this.order);
+			this.events.emit(Events.CONFIRMATION_OF_FILLING_DATA, this.order);
 		}
+	}
+
+	updatePaymentField(payment: 'cash' | 'online') {
+		this.order.payment = payment;
 	}
 
 	validateOrderAddressPayment() {
@@ -132,9 +130,19 @@ export class AppState extends Model<MainPage> {
 		}
 
 		this.formErrors = errors;
-		this.events.emit('formErrors:change', this.formErrors);
+		this.events.emit(Events.PAYMENT_METHOD, this.formErrors);
 
 		return Object.keys(errors).length === 0;
+	}
+
+	setContactField(field: keyof MakingAnOrder, value: string) {
+		if (field !== 'payment') {
+			this.order[field] = value;
+		}
+
+		if (this.validateOrderData()) {
+			this.events.emit(Events.CONFIRMATION_OF_FILLING_DATA, this.order);
+		}
 	}
 
 	validateOrderData() {
@@ -149,7 +157,7 @@ export class AppState extends Model<MainPage> {
 		}
 
 		this.formErrors = errors;
-		this.events.emit('formErrorsContact:change', this.formErrors);
+		this.events.emit(Events.PAYMENT_METHOD, this.formErrors);
 
 		return Object.keys(errors).length === 0;
 	}

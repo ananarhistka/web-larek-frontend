@@ -88,7 +88,7 @@ export interface CartlogoModal {
 }
 
 export type DirectoryEvent = {
-  directore: ProductWithCart[];
+  catalog: ProductWithCart[];
 }
 
 export type MakingAnOrder = ICustomerAddress & ICustomer;
@@ -107,22 +107,26 @@ export interface IOrderEvent extends MakingAnOrder {
   completingTheOrder(): void;
 }
 
-export class OrdetEvent implements IOrderEvent {
+export class OrderEvent implements IOrderEvent {
   list: ProductWithCart[] = [];
   address: string | number;
   payment: string;
   email: string;
   phone: string;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   checkingTheAddress(): void {
 
   }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   checkingThePhone(): void {
 
   }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   checkingEmail(): void {
 
   }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   completingTheOrder(): void {
 
   }
