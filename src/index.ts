@@ -123,7 +123,7 @@ events.on(Events.ORDER_CHECKOUT, () => {
     content: orderCheckout.render({
       address: appData.order.address,
       payment: appData.order.payment,
-      valid: appData.order.isValidCheckout(),
+      valid: !appData.validateOrderCheckout(),
       errors: [],
     }),
   });
@@ -154,25 +154,15 @@ events.on(Events.ORDER_PAYMENT_METHOD,
     orderCheckout.
     switchActiveButton(data.clickedButton, data.otherButton);
     appData.updatePaymentField(data.payment);
-    appData.validateOrderAddressPayment();
+    appData.validateOrderCheckout();
   }
 );
-
-// Событие заполненности формы доставки
-// events.on(Events.CONFIRMATION_OF_FILLING_DATA , () => {
-//   .valid = true;
-// })
 
 events.on(Events.ORDER_PAYMENT_METHOD, (errors: Partial<MakingAnOrder>) => {
   const { email, phone } = errors;
   orderPayment.valid = !email && !phone;
   orderPayment.errors = Object.values({ phone, email }).filter((i) => !!i).join('; ');
 });
-
-// Событие заполненности формы контактов
-//events.on(Events.CONFIRMATION_OF_FILLING_DATA, () => {
-// customer.valid = true;
-//})
 
 // подтверждение, что форма заполнена верно
 events.on(Events.ORDER_CHECKOUT_VALIDATE, (data: {errorMsg: string| null}) => {
@@ -185,7 +175,7 @@ events.on('order:submit', () => {
     content: orderPayment.render({
       phone: appData.order.phone,
       email: appData.order.email,
-      valid: appData.order.isValidPersonalData(),
+      valid: !appData.validateOrderPersonalData(),
       errors: [],
     }),
   });

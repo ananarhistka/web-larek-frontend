@@ -91,11 +91,11 @@ export class AppState extends Model<MainPage> {
 		this.order[field] = value;
 
 		this.events.emit(Events.ORDER_CHECKOUT_VALIDATE, {
-			errorMsg: this.validateOrderAddressPayment()
+			errorMsg: this.validateOrderCheckout()
 		});
 
 		this.events.emit(Events.ORDER_PAYMENT_VALIDATE, {
-			errorMsg: this.validateOrderData()
+			errorMsg: this.validateOrderPersonalData()
 		});
 	}
 
@@ -103,15 +103,12 @@ export class AppState extends Model<MainPage> {
 		this.order.payment = payment;
 	}
 
-	validateOrderAddressPayment(): string | null {
-		const errorMsg = [];
+	validateOrderCheckout(): string | null {
+		const errorMsg = [
+			this.order.checkingTheAddress(),
+			this.order.checkingThePaymentMethod()
+		].filter(item => !!item);
 
-		if (!this.order.address) {
-			errorMsg.push('Необходимо указать адрес');
-		}
-		if (!this.order.payment) {
-			errorMsg.push('Необходимо указать способ оплаты');
-		}
 		if (errorMsg.length > 0) {
 			return errorMsg.join('; ');
 		}
@@ -119,27 +116,11 @@ export class AppState extends Model<MainPage> {
 		return null;
 	}
 
-	setContactField(field: keyof MakingAnOrder, value: string) {
-		if (field !== 'payment') {
-			this.order[field] = value;
-		}
-
-		if (this.validateOrderData()) {
-			// this.events.emit(Events.ORDER_CHECKOUT_VALID, this.order);
-		}
-	}
-
-	validateOrderData() {
-		const errorMsg = [];
-
-
-		if (!this.order.email) {
-			errorMsg.push('Необходимо указать email');
-		}
-
-		if (!this.order.phone) {
-			errorMsg.push('Необходимо указать телефон');
-		}
+	validateOrderPersonalData() {
+		const errorMsg = [
+			this.order.checkingEmail(),
+			this.order.checkingThePhone()
+		].filter(item => !!item);
 
 		if (errorMsg.length > 0) {
 			return errorMsg.join('; ');

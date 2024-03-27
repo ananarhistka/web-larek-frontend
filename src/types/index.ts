@@ -69,12 +69,10 @@ export type DirectoryEvent = {
 // оформление заказа
 export interface IOrderEvent extends MakingAnOrder {
   list: ProductWithCart[];
-  isValidCheckout(): boolean;
-  isValidPersonalData(): boolean;
-  checkingTheAddress(): void;
-  checkingThePhone(): void;
-  checkingEmail(): void;
-  completingTheOrder(): void;
+  checkingThePaymentMethod(): string | null;
+  checkingTheAddress(): string | null;
+  checkingThePhone(): string | null;
+  checkingEmail(): string | null;
 }
 
 export class OrderEvent implements IOrderEvent {
@@ -84,30 +82,37 @@ export class OrderEvent implements IOrderEvent {
   email: string;
   phone: string;
 
-  isValidCheckout(): boolean {
-    return !!this.address && !!this.payment;
+  checkingThePaymentMethod(): string | null {
+    if (!this.payment) {
+      return 'Необходимо указать способ оплаты';
+    }
+    return null;
+  }
+  checkingTheAddress(): string | null {
+    if (!this.address) {
+      return 'Необходимо указать адрес';
+    }
+    return null;
+  }
+  checkingThePhone(): string {
+    if (!this.phone) {
+      return 'Необходимо указать телефон';
+    }
+    if (!/^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/.test(this.phone)) {
+      return 'Укажите корректный телефон';
+    }
+    return null;
+  }
+  checkingEmail(): string | null {
+    if (!this.email) {
+      return 'Необходимо указать email';
+    }
+    if (!/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(this.email)) {
+      return 'Укажите корректный email';
+    }
+    return null;
   }
 
-  isValidPersonalData(): boolean {
-    return !!this.phone && !!this.email;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  checkingTheAddress(): void {
-
-  }
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  checkingThePhone(): void {
-
-  }
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  checkingEmail(): void {
-
-  }
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  completingTheOrder(): void {
-
-  }
 }
 
 export type IFormErrors = Partial<Record<keyof MakingAnOrder, string>>;
