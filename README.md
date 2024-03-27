@@ -296,10 +296,13 @@ export interface IProduct {
 
 //интерфейс главной страницы
 export interface MainPage {
-  directory: CartItem[]; //список всех карточек на странице
-  cart: CartItem[]; //выбранные продукты в корзине
-  preview: CartItem; //модальное окно карточки
-  getFullPrice: number;//получить поную стоймось заказа
+	directory: IProduct[]; //список всех карточек на странице
+	basket: IProduct[];
+	card: IProduct[]; //выбранные продукты в корзине
+	preview: string | null; //модальное окно карточки
+	delivery: IOrderCheckout | null;
+	contact: ICustomer | null;
+	order: IMakingAnOrder | null;
 }
 
 // оформление заказа
