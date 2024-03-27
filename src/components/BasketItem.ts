@@ -1,13 +1,12 @@
-import { Component } from '../base/Component';
-import { EventEmitter } from '../base/events';
-import { ensureElement, createElement } from '../../utils/utils';
-import { Events, IProduct } from '../../types';
+import { Component } from './base/Component';
+import { EventEmitter } from './base/events';
+import { IProduct } from '../types';
 
 interface IBasketProductView {
 	product: IProduct;
 }
 
-export class CartBasket extends Component<IBasketProductView> {
+export class BasketItem extends Component<IBasketProductView> {
 	protected _title: HTMLElement;
 	protected _price: HTMLElement;
 	protected _button: HTMLButtonElement;

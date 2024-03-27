@@ -284,12 +284,14 @@ getProduct(id: string): метод, который получает товар �
 ## Ключевые типы данных
 ```ts
 //описание карточки 
-interface IProduct {
-   id: number;//id карточки
-   name: string;//имя карточки
-   price: number|null;//цена карточки 
-   description: string;//описание 
-   image: string;//путь к изображению
+export interface IProduct {
+	id: string;
+	title: string;
+	price: number | null;
+	description: string;
+	image: string;
+	category: ProductCategory;
+	button?: boolean;
 }
 
 //интерфейс главной страницы
@@ -312,18 +314,19 @@ export interface IOrderEvent extends MakingAnOrder {
 
 ```ts
 //все события на сайте
-enum Events {
-      CATALOG_PRODUCTS = "product:changed", //все категории карточек
-      HOVER_PRODUCTS = "product:hover",//навели на карточку
-      CLICK_PRODUCTS = "card:open", //кликнули по карточке
-      OPEN_MODAL = "modal:open", //при клике на карточку открывается модальное окно
-      CLOSE_MODAL = "modal:close",//приклике на креситк закрывется модальное окно
-      CHANGING_PRODUCT_CART = "cart:changed",//добавить продукт в корзину
-      OPEN_CART = "cart:open",//открыти корзины
-      DELETE_PRODUCT ="prodact:remove",//удалить продукт из корзины
-      MAKING_AN_ORDER = "making-order:open",//переход к оформлению заказа
-      PAYMENT_METHOD = "payment:changed",//способ оплаты
-      FILLING_IN_FIELDS_WHITH_DATE = "data-field:changed",//заполняем поля данными 
-      ORDER_COMPLETION = "order-completion:complete",//заказ оформлен
+export enum Events {
+	LOAD_PRODUCTS = "product:load", //все категории карточек
+	LOT_CHANGED = "lot:changed", //изменение в карточках товара
+	CLICK_PRODUCT = "cart:open", //кликнули по карточке
+	PRODUCT_OPEN = "product:open", //при клике на карточку открывается модальное окно
+	PRODUCT_ADD_TO_CART = "product:add",//добавить продукт в корзину
+	CLOSE_MODAL = "modal:close",//приклике на креситк закрывется модальное окно
+	OPEN_CARD = "card:open",//открыти корзины
+	DELETE_PRODUCT ="product:remove",//удалить продукт из корзины
+	ORDER_CHECKOUT = "order:checkout",//переход к оформлению заказа
+	ORDER_PAYMENT_METHOD = "order:payment",//способ оплаты и адрес
+	ORDER_CHECKOUT_VALIDATE = "order-checkout:validate",// подтверждение, что форма заполнена верно
+	ORDER_PAYMENT_VALIDATE = "order-payment:validate",// подтверждение, что форма c email и тел верно
+	ORDER_COMPLETION = "contacts:submit",//заказ оформлен
 }
 ```

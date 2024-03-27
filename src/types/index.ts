@@ -1,4 +1,5 @@
 export type ProductCategory = "софт-скил" | "другое" | "дополнительное" | "кнопка" | "хард-скил";
+export type PaymentMethod = 'cash' | 'online';
 
 // интерфейс по хранению товара
 export interface IProduct {
@@ -38,36 +39,17 @@ export interface ICustomer {
   phone: string;
 }
 
-export interface ICustomerAddress {
-  address: string | number;
+export interface IOrderCheckout {
+  address: string;
   payment: string;
 }
 
-export type MakingAnOrder = ICustomerAddress & ICustomer;
+export type MakingAnOrder = IOrderCheckout & ICustomer;
 
 export interface IMakingAnOrder extends MakingAnOrder {
   items: string[];
   total: number;
 }
-
-// Заполнение спороба оплаты и адреса доставки в модалке
-//export interface FirstStageOrderModalAction {
-  //selectPaymentMethod(paymentMethod: string): void;
-  //setAddress(address: string): void;
-  // проверяем корректность данных, если есть ошибки, то блокируем кнопку "Продолжить"
-  //canMoveNextStage(): boolean;
-  // Функция меняющая этап оформления заказа
-  //nextStage(): void;
-//}
-
-// Заполнение спороба оплаты и адреса доставки в модалке
-//export interface SecondStageOrderModalAction {
-  //isSuccessOrderCreated: boolean; // Успешно ли оплатили и оформили заказ
-  //setCustomerInfo(customer: ICustomer): void;
-  // Корректны ли телефон и емейл
-  //isValid(): boolean;
-  //pay(): void; // оплачиваем и меняем флаг isSuccessOrderCreated на true
-//}
 
 //интерфейс главной страницы
 export interface MainPage {
@@ -75,17 +57,10 @@ export interface MainPage {
   basket: IProduct[];
   card: IProduct[]; //выбранные продукты в корзине
   preview: string | null; //модальное окно карточки
-  delivery: ICustomerAddress | null;
+  delivery: IOrderCheckout | null;
   contact: ICustomer | null;
   order: IMakingAnOrder | null;
 }
-
-// интерфейс для хранения списка товаров
-//export interface CartlogoModal {
-  //items: IProduct[];
-  //setItems(items: IProduct[]): void; // чтобы установить после загрузки из апи
-  //getProduct(id: string): IProduct[]; // чтобы получить при загрузки из апи
-//}
 
 export type DirectoryEvent = {
   catalog: ProductWithCart[];
@@ -94,6 +69,8 @@ export type DirectoryEvent = {
 // оформление заказа
 export interface IOrderEvent extends MakingAnOrder {
   list: ProductWithCart[];
+  isValidCheckout(): boolean;
+  isValidPersonalData(): boolean;
   checkingTheAddress(): void;
   checkingThePhone(): void;
   checkingEmail(): void;
@@ -102,10 +79,18 @@ export interface IOrderEvent extends MakingAnOrder {
 
 export class OrderEvent implements IOrderEvent {
   list: ProductWithCart[] = [];
-  address: string | number;
+  address: string;
   payment: string;
   email: string;
   phone: string;
+
+  isValidCheckout(): boolean {
+    return !!this.address && !!this.payment;
+  }
+
+  isValidPersonalData(): boolean {
+    return !!this.phone && !!this.email;
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   checkingTheAddress(): void {
@@ -126,18 +111,18 @@ export class OrderEvent implements IOrderEvent {
 }
 
 export type IFormErrors = Partial<Record<keyof MakingAnOrder, string>>;
-
 export enum Events {
-  CATALOG_PRODUCTS = "product:changed", //все категории карточек
+  LOAD_PRODUCTS = "product:load", //все категории карточек
   LOT_CHANGED = "lot:changed", //изменение в карточках товара
-  CLICK_PRODUCTS = "cart:open", //кликнули по карточке
+  CLICK_PRODUCT = "cart:open", //кликнули по карточке
   PRODUCT_OPEN = "product:open", //при клике на карточку открывается модальное окно
   PRODUCT_ADD_TO_CART = "product:add",//добавить продукт в корзину
   CLOSE_MODAL = "modal:close",//приклике на креситк закрывется модальное окно
   OPEN_CARD = "card:open",//открыти корзины
   DELETE_PRODUCT ="product:remove",//удалить продукт из корзины
-  MAKING_AN_ORDER = "making-order:open",//переход к оформлению заказа
-  PAYMENT_METHOD = "payment:changed",//способ оплаты и адрес
-  CONFIRMATION_OF_FILLING_DATA = "order:complete",//подтвержение что форма заполнена верно
-  ORDER_COMPLETION = "order-completion:complete",//заказ оформлен
+  ORDER_CHECKOUT = "order:checkout",//переход к оформлению заказа
+  ORDER_PAYMENT_METHOD = "order:payment",//способ оплаты и адрес
+  ORDER_CHECKOUT_VALIDATE = "order-checkout:validate",// подтверждение, что форма заполнена верно
+  ORDER_PAYMENT_VALIDATE = "order-payment:validate",// подтверждение, что форма c email и тел верно
+  ORDER_COMPLETION = "contacts:submit",//заказ оформлен
 }

@@ -1,4 +1,3 @@
-import { IEvents } from './events';
 
 export abstract class Component<T> {
 
@@ -14,7 +13,7 @@ export abstract class Component<T> {
   // Установить текстовое содержимое
   protected setText(element: HTMLElement, value: unknown): void {
     if (element) {
-      element.textContent = String(value);
+      element.textContent = value ? String(value): null;
     }
   }
 

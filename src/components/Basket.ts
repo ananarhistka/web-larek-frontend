@@ -1,7 +1,7 @@
-import { Component } from '../base/Component';
-import { EventEmitter } from '../base/events';
-import { ensureElement, createElement } from '../../utils/utils';
-import { Events } from '../../types';
+import { Component } from './base/Component';
+import { EventEmitter } from './base/events';
+import { ensureElement, createElement } from '../utils/utils';
+import { Events } from '../types';
 
 interface IBasketView {
 	items: HTMLElement[];
@@ -28,7 +28,7 @@ export class Basket extends Component<IBasketView> {
 				this._button.disabled = true;
 			}
 			this._button.addEventListener('click', () => {
-				events.emit(Events.MAKING_AN_ORDER);
+				events.emit(Events.ORDER_CHECKOUT);
 			});
 		}
 
@@ -68,6 +68,7 @@ interface IProductOpenBasket {
 interface IClick {
 	onClick: (event: MouseEvent) => void;
 }
+
 export class BasketItem extends Component<IProductOpenBasket> {
 	protected _id: HTMLElement;
 	protected _title: HTMLElement;

@@ -1,26 +1,7 @@
-import {
-	IFormErrors,
-	MainPage,
-	ProductWithCart,
-	IOrderEvent,
-	MakingAnOrder,
-	OrderEvent,
-	ProductCategory,
-	IProduct, Events, ICart,
-} from '../types';
-import { Model } from "./base/Model";
+import { Events, ICart, IFormErrors, IOrderEvent, IProduct, MainPage, MakingAnOrder, OrderEvent } from '../types';
+import { Model } from './base/Model';
 import { IEvents } from './base/events';
-
-//модель элемента лота
-export class ProductItem extends Model<ProductWithCart> {
-	id: string;
-	title: string;
-	description: string;
-	image: string;
-	price: number | null;
-	isOrdered: boolean;
-	category: ProductCategory;
-}
+import { ProductItem } from './models/ProductItem';
 
 //модель текущего состояния
 export class AppState extends Model<MainPage> {
@@ -37,12 +18,12 @@ export class AppState extends Model<MainPage> {
 
 	setCatalog(items: IProduct[]) {
 		this.catalog = items.map((item) => new ProductItem(item, this.events));
-		this.emitChanges(Events.CATALOG_PRODUCTS, { catalog: this.catalog });
+		this.emitChanges(Events.LOAD_PRODUCTS, { catalog: this.catalog });
 	}
 
 	setPreview(item: ProductItem): void {
 		this.preview = item.id;
-		this.emitChanges(Events.CLICK_PRODUCTS, item);
+		this.emitChanges(Events.CLICK_PRODUCT, item);
 	}
 
 	addToBasket(item: ProductItem): void {
@@ -64,6 +45,7 @@ export class AppState extends Model<MainPage> {
 
 		this.emitChanges(Events.LOT_CHANGED, item);
 	}
+
 	clearBasket(): void {
 		this.catalog.forEach((el) => {
 			el.isOrdered = false;
@@ -94,8 +76,9 @@ export class AppState extends Model<MainPage> {
 		this.basket = {
 			totalPrice: productsInBasket.reduce((acc, item) => acc + item.price, 0),
 			products: productsInBasket,
-		}
+		};
 	}
+
 	getSelectedProducts = (): IProduct[] => this.catalog.filter((item) => item.isOrdered);
 
 	getFull() {
@@ -103,36 +86,37 @@ export class AppState extends Model<MainPage> {
 			.filter((item) => item.isOrdered)
 			.reduce((acc, el) => acc + el.price, 0);
 	}
+
 	setRequiredFieldToFillIn(field: keyof MakingAnOrder, value: string) {
 		this.order[field] = value;
 
-		if (this.validateOrderAddressPayment()) {
-			this.events.emit(Events.CONFIRMATION_OF_FILLING_DATA, this.order);
-		}
+		this.events.emit(Events.ORDER_CHECKOUT_VALIDATE, {
+			errorMsg: this.validateOrderAddressPayment()
+		});
 
-		if (this.validateOrderData()) {
-			this.events.emit(Events.CONFIRMATION_OF_FILLING_DATA, this.order);
-		}
+		this.events.emit(Events.ORDER_PAYMENT_VALIDATE, {
+			errorMsg: this.validateOrderData()
+		});
 	}
 
 	updatePaymentField(payment: 'cash' | 'online') {
 		this.order.payment = payment;
 	}
 
-	validateOrderAddressPayment() {
-		const errors: typeof this.formErrors = {};
+	validateOrderAddressPayment(): string | null {
+		const errorMsg = [];
 
 		if (!this.order.address) {
-			errors.address = 'Необходимо указать адрес';
+			errorMsg.push('Необходимо указать адрес');
 		}
 		if (!this.order.payment) {
-			errors.payment = 'Необходимо указать способ оплаты';
+			errorMsg.push('Необходимо указать способ оплаты');
+		}
+		if (errorMsg.length > 0) {
+			return errorMsg.join('; ');
 		}
 
-		this.formErrors = errors;
-		this.events.emit(Events.PAYMENT_METHOD, this.formErrors);
-
-		return Object.keys(errors).length === 0;
+		return null;
 	}
 
 	setContactField(field: keyof MakingAnOrder, value: string) {
@@ -141,25 +125,27 @@ export class AppState extends Model<MainPage> {
 		}
 
 		if (this.validateOrderData()) {
-			this.events.emit(Events.CONFIRMATION_OF_FILLING_DATA, this.order);
+			// this.events.emit(Events.ORDER_CHECKOUT_VALID, this.order);
 		}
 	}
 
 	validateOrderData() {
-		const errors: typeof this.formErrors = {};
+		const errorMsg = [];
+
 
 		if (!this.order.email) {
-			errors.email = 'Необходимо указать email';
+			errorMsg.push('Необходимо указать email');
 		}
 
 		if (!this.order.phone) {
-			errors.phone = 'Необходимо указать телефон';
+			errorMsg.push('Необходимо указать телефон');
 		}
 
-		this.formErrors = errors;
-		this.events.emit(Events.PAYMENT_METHOD, this.formErrors);
+		if (errorMsg.length > 0) {
+			return errorMsg.join('; ');
+		}
 
-		return Object.keys(errors).length === 0;
+		return null;
 	}
 }
 

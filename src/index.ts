@@ -1,17 +1,19 @@
 import './scss/styles.scss';
 
 import { EventEmitter } from './components/base/events';
-import { WebLarekApi } from './components/WebLarekApi';
-import { AppState, ProductItem } from './components/AppData';
 import { API_URL, CDN_URL } from './utils/constants';
-import { DirectoryEvent, Events, MakingAnOrder, IMakingAnOrder } from './types';
-import { Page } from './components/WebPage';
-import { CustomerAddress, Customer } from './components/Order';
-import { Card, ActionItem} from './components/Card';
+import { DirectoryEvent, Events, IMakingAnOrder, MakingAnOrder } from './types';
+import { CatalogPage } from './components/CatalogPage';
+import { ActionItem, ProductCard } from './components/ProductCard';
 import { Modal } from './components/common/Modal';
-import { ensureElement, cloneTemplate } from './utils/utils';
-import { Basket, BasketItem } from './components/common/Basket';
-import { Success } from './components/common/Success';
+import { cloneTemplate, ensureElement } from './utils/utils';
+import { ProductItem } from './components/models/ProductItem';
+import { AppState } from './components/AppState';
+import { WebLarekApi } from './components/api/WebLarekApi';
+import { Basket, BasketItem } from './components/Basket';
+import { OrderSuccess } from './components/OrderSuccess';
+import { OrderCheckout } from './components/OrderCheckout';
+import { OrderPayment } from './components/OrderPayment';
 
 const events = new EventEmitter();
 const api = new WebLarekApi(CDN_URL, API_URL);
@@ -27,12 +29,12 @@ const cardBasketTemplate = ensureElement<HTMLTemplateElement>("#card-basket")
 const basketTemplate = ensureElement<HTMLTemplateElement>("#basket");
 
 const basket = new Basket(cloneTemplate(basketTemplate), events);
-const order = new CustomerAddress(cloneTemplate(orderTemplate), events);
-const customer = new Customer(cloneTemplate(contactsTemplate), events);
+const orderCheckout = new OrderCheckout(cloneTemplate(orderTemplate), events);
+const orderPayment = new OrderPayment(cloneTemplate(contactsTemplate), events);
 
 const appData = new AppState({}, events);
 
-const page = new Page(document.body, events);
+const page = new CatalogPage(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
 // Чтобы мониторить все события, для отладки
@@ -41,12 +43,12 @@ events.onAll(({ eventName, data }) => {
 });
 
 //прослушивание события отрисовка карточек
-events.on<DirectoryEvent>(Events.CATALOG_PRODUCTS, () => {
+events.on<DirectoryEvent>(Events.LOAD_PRODUCTS, () => {
   page.sector = appData.catalog.map((catalogItem) => {
-    const card = new Card('card', cloneTemplate(cardCatalogTemplate), {
+    const card = new ProductCard('card', cloneTemplate(cardCatalogTemplate), {
       onClick: () => events.emit(Events.PRODUCT_OPEN, catalogItem),
     });
-    
+
     return card.render({
       title: catalogItem.title,
       image: catalogItem.image,
@@ -93,10 +95,10 @@ events.on(Events.OPEN_CARD, () => {
   });
 });
 
-  //событие удаление по кнопке в корзине
-  events.on(Events.DELETE_PRODUCT, (item: ProductItem) => {
-    appData.deleteFromTheBasket(item);
-  });
+//событие удаление по кнопке в корзине
+events.on(Events.DELETE_PRODUCT, (item: ProductItem) => {
+  appData.deleteFromTheBasket(item);
+});
 
 //добавление в корзину и отрисовка добавленного
 events.on(Events.LOT_CHANGED, () => {
@@ -116,22 +118,22 @@ events.on(Events.LOT_CHANGED, () => {
 });
 
 // мадальное окно с адресом при заказе
-events.on(Events.MAKING_AN_ORDER, (data : {valid: boolean}) => {
+events.on(Events.ORDER_CHECKOUT, () => {
   modal.render({
-    content: order.render({
-      address: order.address,
-      payment: order.payment,
-      valid: data.valid,
+    content: orderCheckout.render({
+      address: appData.order.address,
+      payment: appData.order.payment,
+      valid: appData.order.isValidCheckout(),
       errors: [],
     }),
   });
 });
 
 // Изменение состояния валидации форм доставка и способ оплаты
-events.on(Events.PAYMENT_METHOD , (errors: Partial<IMakingAnOrder>) => {
+events.on(Events.ORDER_PAYMENT_METHOD , (errors: Partial<IMakingAnOrder>) => {
   const { address, payment } = errors;
-  order.valid = !address && !payment;
-  order.errors = Object.values({ address, payment }).filter((i) => !!i).join('; ');
+  orderCheckout.valid = !address && !payment;
+  orderCheckout.errors = Object.values({ address, payment }).filter((i) => !!i).join('; ');
 });
 
 // Изменение полей контактов и доставки
@@ -142,15 +144,14 @@ events.on(
   }
 );
 
-//изменился способ оплаты
-events.on(
-  Events.PAYMENT_METHOD,
+// изменился способ оплаты
+events.on(Events.ORDER_PAYMENT_METHOD,
   (data: {
     payment: 'cash' | 'online';
     clickedButton: HTMLButtonElement;
     otherButton: HTMLButtonElement;
   }) => {
-    order.
+    orderCheckout.
     switchActiveButton(data.clickedButton, data.otherButton);
     appData.updatePaymentField(data.payment);
     appData.validateOrderAddressPayment();
@@ -158,32 +159,43 @@ events.on(
 );
 
 // Событие заполненности формы доставки
-//events.on(Events.CONFIRMATION_OF_FILLING_DATA , () => {
-  //order.valid = true;
-//})
+// events.on(Events.CONFIRMATION_OF_FILLING_DATA , () => {
+//   .valid = true;
+// })
 
-events.on(Events.PAYMENT_METHOD, (errors: Partial<MakingAnOrder>) => {
+events.on(Events.ORDER_PAYMENT_METHOD, (errors: Partial<MakingAnOrder>) => {
   const { email, phone } = errors;
-  customer.valid = !email && !phone;
-  customer.errors = Object.values({ phone, email }).filter((i) => !!i).join('; ');
+  orderPayment.valid = !email && !phone;
+  orderPayment.errors = Object.values({ phone, email }).filter((i) => !!i).join('; ');
 });
 
 // Событие заполненности формы контактов
 //events.on(Events.CONFIRMATION_OF_FILLING_DATA, () => {
- // customer.valid = true;
+// customer.valid = true;
 //})
 
-// мадальное окно, заолнение телефона и почты
-events.on(Events.CONFIRMATION_OF_FILLING_DATA, (data : {valid: boolean}) => {
+// подтверждение, что форма заполнена верно
+events.on(Events.ORDER_CHECKOUT_VALIDATE, (data: {errorMsg: string| null}) => {
+  orderCheckout.valid = !data.errorMsg;
+  orderCheckout.errors = data.errorMsg;
+});
+
+events.on('order:submit', () => {
   modal.render({
-    content: customer.render({
-      phone: '',
-      email: '',
-      valid:  data.valid,
+    content: orderPayment.render({
+      phone: appData.order.phone,
+      email: appData.order.email,
+      valid: appData.order.isValidPersonalData(),
       errors: [],
     }),
   });
 });
+
+events.on(Events.ORDER_PAYMENT_VALIDATE, (data: {errorMsg: string| null}) => {
+  orderPayment.valid = !data.errorMsg;
+  orderPayment.errors = data.errorMsg;
+});
+
 
 events.on(Events.ORDER_COMPLETION, () => {
   api
@@ -193,14 +205,14 @@ events.on(Events.ORDER_COMPLETION, () => {
       items: appData.getSelectedProducts().map((el) => el.id),
     })
     .then((result) => {
-      const success = new Success(cloneTemplate(orderRegistration), {
+      const orderSuccess = new OrderSuccess(cloneTemplate(orderRegistration), {
         onClick: () => {
           modal.close();
         },
       });
       appData.clearBasket();
       modal.render({
-        content: success.render({
+        content: orderSuccess.render({
           total: result.total,
         }),
       });
@@ -211,17 +223,17 @@ events.on(Events.ORDER_COMPLETION, () => {
 });
 
 // Блокируем прокрутку страницы если открыта модалка
-  events.on(Events.PRODUCT_OPEN, () => {
-    page.locked = true;
-  });
+events.on(Events.PRODUCT_OPEN, () => {
+  page.locked = true;
+});
 
 // ... и разблокируем
-  events.on(Events.CLOSE_MODAL, () => {
-    page.locked = false;
-  });
+events.on(Events.CLOSE_MODAL, () => {
+  page.locked = false;
+});
 
-  api.getLotList()
-    .then((response) => {
-      appData.setCatalog(response.items);
-    })
-    .catch(err => console.error(err));
+api.getProductList()
+  .then((response) => {
+    appData.setCatalog(response.items);
+  })
+  .catch(err => console.error(err));

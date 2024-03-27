@@ -22,9 +22,9 @@ export class Form<T> extends Component<IFormState> {
 
 		this.container.addEventListener('input', (e: Event) => {
 			const target = e.target as HTMLInputElement;
-			const space = target.name as keyof T;
+			const field = target.name as keyof T;
 			const value = target.value;
-			this.onInputChange(space, value);
+			this.onInputChange(field, value);
 		});
 
 		this.container.addEventListener('submit', (e: Event) => {
@@ -33,9 +33,9 @@ export class Form<T> extends Component<IFormState> {
 		});
 	}
 
-	protected onInputChange(space: keyof T, value: string) {
-		this.events.emit(`${this.container.name}.${String(space)}:change`, {
-			space,
+	protected onInputChange(field: keyof T, value: string) {
+		this.events.emit(`${this.container.name}.${String(field)}:change`, {
+			field,
 			value,
 		});
 	}

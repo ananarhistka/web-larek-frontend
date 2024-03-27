@@ -1,19 +1,20 @@
-import { Component } from '../base/Component';
-import { ensureElement } from '../../utils/utils';
+import { Component } from './base/Component';
+import { ensureElement } from '../utils/utils';
 
-interface ISuccess {
+
+interface IOrderSuccess {
 	total: number;
 }
 
-interface ISuccessActions {
+interface IOrderSuccessActions {
 	onClick: () => void;
 }
 
-export class Success extends Component<ISuccess> {
+export class OrderSuccess extends Component<IOrderSuccess> {
 	protected _close: HTMLElement;
 	protected _total: HTMLElement;
 
-	constructor(container: HTMLElement, actions: ISuccessActions) {
+	constructor(container: HTMLElement, actions: IOrderSuccessActions) {
 		super(container);
 		this._total = ensureElement<HTMLElement>(
 			'.order-success__description',
