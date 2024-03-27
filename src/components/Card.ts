@@ -160,6 +160,7 @@ export class ActionItem extends Card {
   set description(value: string) {
     this.setText(this._description, value);
   }
+
 }
 /*import { EventEmitter } from './components/base/events';
 import { ICartModel, IEventEmitter, CartlogoModal, IView, IViewConstructor } from './types';

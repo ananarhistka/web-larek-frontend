@@ -4,9 +4,9 @@ import { EventEmitter } from './components/base/events';
 import { WebLarekApi } from './components/WebLarekApi';
 import { AppState, ProductItem } from './components/AppData';
 import { API_URL, CDN_URL } from './utils/constants';
-import { DirectoryEvent, Events, MakingAnOrder } from './types';
+import { DirectoryEvent, Events, MakingAnOrder, IMakingAnOrder } from './types';
 import { Page } from './components/WebPage';
-import { CustomerAddress, Customer } from './components/Ordet';
+import { CustomerAddress, Customer } from './components/Order';
 import { Card, ActionItem} from './components/Card';
 import { Modal } from './components/common/Modal';
 import { ensureElement, cloneTemplate } from './utils/utils';
@@ -116,19 +116,19 @@ events.on(Events.LOT_CHANGED, () => {
 });
 
 // мадальное окно с адресом при заказе
-events.on(Events.MAKING_AN_ORDER, () => {
+events.on(Events.MAKING_AN_ORDER, (data : {valid: boolean}) => {
   modal.render({
     content: order.render({
       address: order.address,
       payment: order.payment,
-      valid: false,
+      valid: data.valid,
       errors: [],
     }),
   });
 });
 
 // Изменение состояния валидации форм доставка и способ оплаты
-events.on(Events.PAYMENT_METHOD , (errors: Partial<MakingAnOrder>) => {
+events.on(Events.PAYMENT_METHOD , (errors: Partial<IMakingAnOrder>) => {
   const { address, payment } = errors;
   order.valid = !address && !payment;
   order.errors = Object.values({ address, payment }).filter((i) => !!i).join('; ');
@@ -144,7 +144,7 @@ events.on(
 
 //изменился способ оплаты
 events.on(
-  'payment:change',
+  Events.PAYMENT_METHOD,
   (data: {
     payment: 'cash' | 'online';
     clickedButton: HTMLButtonElement;
@@ -158,9 +158,9 @@ events.on(
 );
 
 // Событие заполненности формы доставки
-events.on('delivery:ready' , () => {
-  order.valid = true;
-})
+//events.on(Events.CONFIRMATION_OF_FILLING_DATA , () => {
+  //order.valid = true;
+//})
 
 events.on(Events.PAYMENT_METHOD, (errors: Partial<MakingAnOrder>) => {
   const { email, phone } = errors;
@@ -169,17 +169,17 @@ events.on(Events.PAYMENT_METHOD, (errors: Partial<MakingAnOrder>) => {
 });
 
 // Событие заполненности формы контактов
-events.on('contact:ready', () => {
-  customer.valid = true;
-})
+//events.on(Events.CONFIRMATION_OF_FILLING_DATA, () => {
+ // customer.valid = true;
+//})
 
 // мадальное окно, заолнение телефона и почты
-events.on(Events.CONFIRMATION_OF_FILLING_DATA, () => {
+events.on(Events.CONFIRMATION_OF_FILLING_DATA, (data : {valid: boolean}) => {
   modal.render({
     content: customer.render({
       phone: '',
       email: '',
-      valid: false,
+      valid:  data.valid,
       errors: [],
     }),
   });
@@ -193,14 +193,16 @@ events.on(Events.ORDER_COMPLETION, () => {
       items: appData.getSelectedProducts().map((el) => el.id),
     })
     .then((result) => {
-      appData.clearBasket();
       const success = new Success(cloneTemplate(orderRegistration), {
         onClick: () => {
           modal.close();
         },
       });
+      appData.clearBasket();
       modal.render({
-        content: success.render({}),
+        content: success.render({
+          total: result.total,
+        }),
       });
     })
     .catch((err) => {

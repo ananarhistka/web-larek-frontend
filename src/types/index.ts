@@ -18,6 +18,8 @@ export interface IProductAction {
   remove(): void; // Удалить товар из корзины
 }
 
+export type ProductWithCart = IProduct & IProductAction;
+
 // интерфейс по данным в корзине
 export interface ICart {
   products: IProduct[];
@@ -41,61 +43,52 @@ export interface ICustomerAddress {
   payment: string;
 }
 
-export interface IOrder {
-  products: IProduct[];
-  totalPrice: number;
-  customer: ICustomer;
-  paymentMethod: string;
-  address: string;
-}
-
-// Заполнение спороба оплаты и адреса доставки в модалке
-export interface FirstStageOrderModalAction {
-  selectPaymentMethod(paymentMethod: string): void;
-  setAddress(address: string): void;
-  // проверяем корректность данных, если есть ошибки, то блокируем кнопку "Продолжить"
-  canMoveNextStage(): boolean;
-  // Функция меняющая этап оформления заказа
-  nextStage(): void;
-}
-
-// Заполнение спороба оплаты и адреса доставки в модалке
-export interface SecondStageOrderModalAction {
-  isSuccessOrderCreated: boolean; // Успешно ли оплатили и оформили заказ
-  setCustomerInfo(customer: ICustomer): void;
-  // Корректны ли телефон и емейл
-  isValid(): boolean;
-  pay(): void; // оплачиваем и меняем флаг isSuccessOrderCreated на true
-}
-
-
-export type ProductWithCart = IProduct & IProductAction;
-
-//интерфейс главной страницы
-export interface MainPage {
-  directory: ProductWithCart[]; //список всех карточек на странице
-  card: ProductWithCart[]; //выбранные продукты в корзине
-  preview: ProductWithCart; //модальное окно карточки
-  getFullPrice: number;//получить поную стоймось заказа
-  order: IOrderEvent | null;
-}
-
-// интерфейс для хранения списка товаров
-export interface CartlogoModal {
-  items: IProduct[];
-  setItems(items: IProduct[]): void; // чтобы установить после загрузки из апи
-  getProduct(id: string): IProduct[]; // чтобы получить при загрузки из апи
-}
-
-export type DirectoryEvent = {
-  catalog: ProductWithCart[];
-}
-
 export type MakingAnOrder = ICustomerAddress & ICustomer;
 
 export interface IMakingAnOrder extends MakingAnOrder {
   items: string[];
   total: number;
+}
+
+// Заполнение спороба оплаты и адреса доставки в модалке
+//export interface FirstStageOrderModalAction {
+  //selectPaymentMethod(paymentMethod: string): void;
+  //setAddress(address: string): void;
+  // проверяем корректность данных, если есть ошибки, то блокируем кнопку "Продолжить"
+  //canMoveNextStage(): boolean;
+  // Функция меняющая этап оформления заказа
+  //nextStage(): void;
+//}
+
+// Заполнение спороба оплаты и адреса доставки в модалке
+//export interface SecondStageOrderModalAction {
+  //isSuccessOrderCreated: boolean; // Успешно ли оплатили и оформили заказ
+  //setCustomerInfo(customer: ICustomer): void;
+  // Корректны ли телефон и емейл
+  //isValid(): boolean;
+  //pay(): void; // оплачиваем и меняем флаг isSuccessOrderCreated на true
+//}
+
+//интерфейс главной страницы
+export interface MainPage {
+  directory: IProduct[]; //список всех карточек на странице
+  basket: IProduct[];
+  card: IProduct[]; //выбранные продукты в корзине
+  preview: string | null; //модальное окно карточки
+  delivery: ICustomerAddress | null;
+  contact: ICustomer | null;
+  order: IMakingAnOrder | null;
+}
+
+// интерфейс для хранения списка товаров
+//export interface CartlogoModal {
+  //items: IProduct[];
+  //setItems(items: IProduct[]): void; // чтобы установить после загрузки из апи
+  //getProduct(id: string): IProduct[]; // чтобы получить при загрузки из апи
+//}
+
+export type DirectoryEvent = {
+  catalog: ProductWithCart[];
 }
 
 // оформление заказа
