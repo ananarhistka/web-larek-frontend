@@ -1,5 +1,5 @@
 import { Component } from './base/Component';
-import { EventEmitter } from './base/events';
+import { EventEmitter } from './base/Events';
 import { IProduct } from '../types';
 
 interface IBasketProductView {

@@ -1,5 +1,5 @@
 import { Component } from './base/Component';
-import { EventEmitter } from './base/events';
+import { EventEmitter } from './base/Events';
 import { ensureElement, createElement } from '../utils/utils';
 import { Events } from '../types';
 

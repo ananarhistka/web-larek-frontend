@@ -1,6 +1,6 @@
 import { Events, ICart, IFormErrors, IOrderEvent, IProduct, MainPage, MakingAnOrder, OrderEvent } from '../types';
 import { Model } from './base/Model';
-import { IEvents } from './base/events';
+import { IEvents } from './base/Events';
 import { ProductItem } from './models/ProductItem';
 
 //модель текущего состояния

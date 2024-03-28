@@ -1,5 +1,5 @@
 import { IOrderCheckout } from '../types';
-import { IEvents } from './base/events';
+import { IEvents } from './base/Events';
 import { ensureElement } from '../utils/utils';
 import { Form } from './common/Form';
 

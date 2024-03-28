@@ -1,6 +1,6 @@
 import './scss/styles.scss';
 
-import { EventEmitter } from './components/base/events';
+import { EventEmitter } from './components/base/Events';
 import { API_URL, CDN_URL } from './utils/constants';
 import { DirectoryEvent, Events, IMakingAnOrder, MakingAnOrder } from './types';
 import { CatalogPage } from './components/CatalogPage';
