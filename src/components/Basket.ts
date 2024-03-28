@@ -25,7 +25,7 @@ export class Basket extends Component<IBasketView> {
 
 		if (this._button) {
 			if (!this.items?.length) {
-				this._button.disabled = true;
+				this.setDisabled(this._button, true)
 			}
 			this._button.addEventListener('click', () => {
 				events.emit(Events.ORDER_CHECKOUT);
@@ -36,14 +36,14 @@ export class Basket extends Component<IBasketView> {
 	set items(items: HTMLElement[]) {
 		if (items.length) {
 			this._list.replaceChildren(...items);
-			this._button.disabled = false;
+			this.setDisabled(this._button, false);
 		} else {
 			this._list.replaceChildren(
 				createElement<HTMLParagraphElement>('p', {
 					textContent: 'Корзина пуста',
 				})
 			);
-			this._button.disabled = true;
+			this.setDisabled(this._button, true);
 		}
 	}
 

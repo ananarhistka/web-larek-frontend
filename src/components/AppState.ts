@@ -1,7 +1,8 @@
-import { Events, ICart, IFormErrors, IOrderEvent, IProduct, MainPage, MakingAnOrder, OrderEvent } from '../types';
+import { Events, ICart, IFormErrors, IOrderEvent, IProduct, MainPage, MakingAnOrder } from '../types';
 import { Model } from './base/Model';
 import { IEvents } from './base/Events';
 import { ProductItem } from './models/ProductItem';
+import { OrderEvent } from './OrderCheckout';
 
 //модель текущего состояния
 export class AppState extends Model<MainPage> {

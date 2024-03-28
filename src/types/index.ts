@@ -75,46 +75,6 @@ export interface IOrderEvent extends MakingAnOrder {
   checkingEmail(): string | null;
 }
 
-export class OrderEvent implements IOrderEvent {
-  list: ProductWithCart[] = [];
-  address: string;
-  payment: string;
-  email: string;
-  phone: string;
-
-  checkingThePaymentMethod(): string | null {
-    if (!this.payment) {
-      return 'Необходимо указать способ оплаты';
-    }
-    return null;
-  }
-  checkingTheAddress(): string | null {
-    if (!this.address) {
-      return 'Необходимо указать адрес';
-    }
-    return null;
-  }
-  checkingThePhone(): string {
-    if (!this.phone) {
-      return 'Необходимо указать телефон';
-    }
-    if (!/^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/.test(this.phone)) {
-      return 'Укажите корректный телефон';
-    }
-    return null;
-  }
-  checkingEmail(): string | null {
-    if (!this.email) {
-      return 'Необходимо указать email';
-    }
-    if (!/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(this.email)) {
-      return 'Укажите корректный email';
-    }
-    return null;
-  }
-
-}
-
 export type IFormErrors = Partial<Record<keyof MakingAnOrder, string>>;
 export enum Events {
   LOAD_PRODUCTS = "product:load", //все категории карточек

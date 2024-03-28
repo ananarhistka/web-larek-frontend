@@ -1,8 +1,47 @@
-import { IOrderCheckout } from '../types';
+import { IOrderCheckout, IOrderEvent, ProductWithCart } from '../types';
 import { IEvents } from './base/Events';
 import { ensureElement } from '../utils/utils';
 import { Form } from './common/Form';
 
+export class OrderEvent implements IOrderEvent {
+	list: ProductWithCart[] = [];
+	address: string;
+	payment: string;
+	email: string;
+	phone: string;
+
+	checkingThePaymentMethod(): string | null {
+		if (!this.payment) {
+			return 'Необходимо указать способ оплаты';
+		}
+		return null;
+	}
+	checkingTheAddress(): string | null {
+		if (!this.address) {
+			return 'Необходимо указать адрес';
+		}
+		return null;
+	}
+	checkingThePhone(): string {
+		if (!this.phone) {
+			return 'Необходимо указать телефон';
+		}
+		if (!/^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/.test(this.phone)) {
+			return 'Укажите корректный телефон';
+		}
+		return null;
+	}
+	checkingEmail(): string | null {
+		if (!this.email) {
+			return 'Необходимо указать email';
+		}
+		if (!/^\w+[\w.-]*@\w+[\w.-]*\.[a-zA-Z]{2,3}$/.test(this.email)) {
+			return 'Укажите корректный email';
+		}
+		return null;
+	}
+
+}
 export class OrderCheckout extends Form<IOrderCheckout> {
 	protected _containerPay: HTMLDivElement;
 	protected _buttonsPaymentOffline: HTMLButtonElement;
@@ -51,6 +90,6 @@ export class OrderCheckout extends Form<IOrderCheckout> {
 			this._buttonsPaymentOnline.classList.remove('button_alt-active');
 		}
 
-		this.onInputChange('payment', value);
+		this.onControlChange('payment', value);
 	}
 }

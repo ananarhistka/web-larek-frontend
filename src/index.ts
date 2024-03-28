@@ -104,11 +104,11 @@ events.on(Events.DELETE_PRODUCT, (item: ProductItem) => {
 events.on(Events.LOT_CHANGED, () => {
   page.counter = appData.getSelectedProducts()?.length;
   basket.items = appData.getSelectedProducts().map((item, id) => {
-    const CardTemplate = new BasketItem(cloneTemplate(cardBasketTemplate), { onClick: () => {
+    const basketCard = new BasketItem(cloneTemplate(cardBasketTemplate), { onClick: () => {
         events.emit(Events.DELETE_PRODUCT, item);
       },
     });
-    return CardTemplate.render({
+    return basketCard.render({
       title: item.title,
       price: item.price,
       id: id + 1,

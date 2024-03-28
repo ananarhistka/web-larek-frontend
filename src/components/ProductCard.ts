@@ -60,11 +60,10 @@ export class ProductCard extends Component<IProduct> {
   }
 
   set sector(value: string) {
-    const sectorElement = this.container.querySelector(
-      `.${this.blockName}__category`
-    );
+    const sectorElement = this.container.querySelector(`.${this.blockName}__category`) as HTMLElement | null;
 
-    sectorElement.textContent = value;
+    if (sectorElement) {
+      this.setText(sectorElement, value);
 
     let sectorValue = '';
 
@@ -88,9 +87,8 @@ export class ProductCard extends Component<IProduct> {
         sectorValue = '';
         break;
     }
-    sectorElement.classList.add(
-      `${this.blockName}__sector_${sectorValue}`
-    );
+      sectorElement.setAttribute('class', `${this.blockName}__sector_${sectorValue}`);
+    }
   }
 
   get sector(): string {
